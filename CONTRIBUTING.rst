@@ -1,4 +1,4 @@
-OpenStack-Ansible Galera Client
+OpenStack-Ansible Ceph Client
 ###############################
 
 Contributor Guidelines
