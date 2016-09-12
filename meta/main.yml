@@ -2,5 +2,7 @@
 dependencies:
 - role: apt_package_pinning
   apt_pinned_packages: "{{ ceph_apt_pinned_packages }}"
+  when:
+    - ansible_pkg_mgr == 'apt'
   tags:
   - ceph-pre-preinstall
