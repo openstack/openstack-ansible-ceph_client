@@ -59,3 +59,16 @@
   tags:
     - ceph-config-create-config
 
+- name: Create extra ceph.conf files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner:  root
+    group:  root
+    mode:   0644
+  notify:
+  - Restart os services
+  with_items: "{{ ceph_extra_confs }}"
+  when: ceph_extra_confs is defined
+  tags:
+    - ceph-config-create-config

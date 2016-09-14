@@ -74,6 +74,21 @@ The example uses ``cephx`` authentication, and requires existing ``glance`` and
 
 .. _Deploying SSH Keys: targethosts-prepare.html#deploying-ssh-keys
 
+Extra client configuration files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Deployers can specify extra Ceph configuration files to support
+multiple Ceph cluster backends via the ``ceph_extra_confs`` variable.
+
+.. code-block:: console
+
+    ceph_extra_confs:
+    -  src: "/opt/rdb-1.conf"
+       dest: "/etc/ceph/rdb-1.conf"
+    -  src: "/opt/rdb-2.conf"
+       dest: "/etc/ceph/rdb-2.conf"
+
+These config file sources must be present on the deployment host.
+
 Monitors
 ~~~~~~~~
 
