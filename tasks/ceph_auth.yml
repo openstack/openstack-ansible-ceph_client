@@ -38,7 +38,7 @@
   until: ceph_client_keyrings|success
   retries: 3
   tags:
-  - ceph-auth-client-keyrings
+    - ceph-auth-client-keyrings
 
 - name: Create cephkeys_access_group group
   group:
@@ -104,9 +104,12 @@
     src: secret.xml.j2
     dest: /tmp/nova-secret.xml
     mode: "0600"
+  with_items:
+    - secret_uuid: "{{ nova_ceph_client_uuid }}"
+      client_name: "{{ nova_ceph_client }}"
   when: inventory_hostname in groups.nova_compute and libvirt_nova_defined.rc is defined and libvirt_nova_defined.rc != 0
   tags:
-  - ceph-auth-nova-libvirt-secret
+    - ceph-auth-nova-libvirt-secret
 
 - name: Define libvirt nova secret
   command: virsh secret-define --file /tmp/nova-secret.xml
@@ -149,3 +152,46 @@
   when: inventory_hostname in groups.nova_compute and libvirt_nova_set
   tags:
     - ceph-auth-nova-libvirt-secret
+
+- name: Detect correct group for extra auth
+  set_fact:
+    ceph_in_extra_auth_group: True
+  with_items: "{{ ceph_extra_auth_groups }}"
+  when:
+    - ceph_extra_confs is defined
+    - inventory_hostname in groups[item]
+  tags:
+    - ceph-auth
+    - ceph-auth-extra
+
+- include: ceph_auth_extra.yml
+  when:
+    - ceph_in_extra_auth_group is defined
+    - ceph_in_extra_auth_group | bool
+  static: no
+  tags:
+    - ceph-auth
+    - ceph-auth-extra
+
+- name: Detect extra nova uuid secret
+  set_fact:
+    ceph_extra_nova_uuid: True
+  with_items: "{{ ceph_extra_confs }}"
+  when:
+    - ceph_extra_confs is defined
+    - inventory_hostname in groups[ceph_extra_compute_group]
+    - item.secret_uuid is defined
+  tags:
+    - ceph-auth
+    - ceph-auth-extra
+    - ceph-auth-libvirt-extra
+
+- include: ceph_auth_extra_compute.yml
+  when:
+    - ceph_extra_nova_uuid is defined
+    - ceph_extra_nova_uuid | bool
+  static: no
+  tags:
+    - ceph-auth
+    - ceph-auth-extra
+    - ceph-auth-libvirt-extra

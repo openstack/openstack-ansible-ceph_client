@@ -98,3 +98,9 @@ ceph_glance_service_names:
 ceph_gnocchi_service_names:
   - gnocchi-api
   - gnocchi-metricd
+
+ceph_extra_auth_groups: "{{ ceph_extra_config_groups }}"
+ceph_extra_config_groups:
+  - cinder_backup
+  - cinder_volume
+ceph_extra_compute_group: nova_compute

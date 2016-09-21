@@ -60,4 +60,3 @@
   static: no
   when: cephx | bool
   tags:     ceph-auth
-
