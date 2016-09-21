@@ -59,16 +59,22 @@
   tags:
     - ceph-config-create-config
 
-- name: Create extra ceph.conf files
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner:  root
-    group:  root
-    mode:   0644
-  notify:
-  - Restart os services
-  with_items: "{{ ceph_extra_confs }}"
-  when: ceph_extra_confs is defined
+- name: Detect correct group for extra config
+  set_fact:
+    ceph_in_extra_config_group: True
+  when:
+     - ceph_extra_confs is defined
+     - inventory_hostname in groups[item]
+  with_items: "{{ ceph_extra_config_groups }}"
   tags:
-    - ceph-config-create-config
+    - ceph-config
+    - ceph-config-extra
+
+- include: ceph_config_extra.yml
+  when:
+    - ceph_in_extra_config_group is defined
+    - ceph_in_extra_config_group | bool
+  static: no
+  tags:
+    - ceph-config
+    - ceph-config-extra

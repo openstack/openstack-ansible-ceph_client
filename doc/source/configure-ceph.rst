@@ -89,6 +89,46 @@ multiple Ceph cluster backends via the ``ceph_extra_confs`` variable.
 
 These config file sources must be present on the deployment host.
 
+Alternatively, deployers can specify more options in ``ceph_extra_confs``
+to deploy keyrings, ceph.conf files, and configure libvirt secrets.
+
+.. code-block:: console
+
+    ceph_extra_confs:
+    -  src: "/etc/openstack_deploy/ceph2.conf"
+       dest: "/etc/ceph/ceph2.conf"
+       mon_host: 192.168.1.2
+       client_name: cinder2
+       keyring_src: /etc/openstack_deploy/ceph2.client.cinder2.keyring
+       keyring_dest: /etc/ceph/ceph2.client.cinder2.keyring
+       secret_uuid: '{{ cinder_ceph_client_uuid2 }}'
+    -  src: "/etc/openstack_deploy/ceph3.conf"
+       dest: "/etc/ceph/ceph3.conf"
+       mon_host: 192.168.1.3
+       client_name: cinder3
+       keyring_src: /etc/openstack_deploy/ceph3.client.cinder3.keyring
+       keyring_dest: /etc/ceph/ceph3.client.cinder3.keyring
+       secret_uuid: '{{ cinder_ceph_client_uuid3 }}'
+
+The primary aim of this feature is to deploy multiple ceph clusters as
+cinder backends and enable nova/libvirt to mount block volumes from those
+backends.  These settings do not override the normal deployment of
+ceph client and associated setup tasks.
+
+Deploying multiple ceph clusters as cinder backends requires the following
+adjustments to each backend in ``cinder_backends``
+
+.. code-block:: console
+
+    rbd_ceph_conf: /etc/ceph/ceph2.conf
+    rbd_pool: cinder_volumes_2
+    rbd_user: cinder2
+    rbd_secret_uuid: '{{ cinder_ceph_client_uuid2 }}'
+    volume_backend_name: volumes2
+
+The dictionary keys ``rbd_ceph_conf``, ``rbd_user``, and ``rbd_secret_uuid``
+must be unique for each ceph cluster to used as a cinder_backend.
+
 Monitors
 ~~~~~~~~
 
