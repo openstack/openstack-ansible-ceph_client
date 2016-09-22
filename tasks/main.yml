@@ -14,6 +14,7 @@
 # limitations under the License.
 
 - include: ceph_all.yml
+  static: no
   when: >
         (inventory_hostname in groups['glance_api']
         and glance_default_store == 'rbd')

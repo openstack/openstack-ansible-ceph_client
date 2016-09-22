@@ -34,6 +34,7 @@
     - always
 
 - include:  ceph_preinstall.yml
+  static: no
   when:
     - ceph_pkg_source != 'distro'
   tags:     ceph-preinstall
@@ -42,6 +43,7 @@
   tags:     ceph-install
 
 - include: ceph_install_python_libs.yml
+  static: no
   when: openstack_service_venv_bin != ''
   tags:
     - ceph-install
@@ -55,7 +57,7 @@
   tags:     ceph-config
 
 - include:  ceph_auth.yml
-  when: >
-            cephx | bool
+  static: no
+  when: cephx | bool
   tags:     ceph-auth
 

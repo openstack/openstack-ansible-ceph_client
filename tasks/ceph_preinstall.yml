@@ -15,6 +15,7 @@
 # limitations under the License.
 
 - include: ceph_preinstall_apt.yml
+  static: no
   when:
     - ansible_pkg_mgr == 'apt'
   tags:
