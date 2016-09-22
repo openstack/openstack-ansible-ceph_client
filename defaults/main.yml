@@ -66,10 +66,11 @@ ceph_mons: []
 #  auth_service_required = cephx
 #  auth_client_required = cephx
 
-# Ceph client usernames for glance and cinder+nova
+# Ceph client usernames for glance, cinder+nova and gnocchi
 glance_ceph_client: glance
 cinder_ceph_client: cinder
 cinder_backup_ceph_client: cinder-backup
+gnocchi_ceph_client: gnocchi
 
 # by default we assume you use rbd for both cinder and nova, and as libvirt
 # needs to access both volumes (cinder) as boot disks (nova) we default to
@@ -93,3 +94,7 @@ ceph_nova_service_names:
 
 ceph_glance_service_names:
   - glance-api
+
+ceph_gnocchi_service_names:
+  - gnocchi-api
+  - gnocchi-metricd

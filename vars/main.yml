@@ -48,4 +48,10 @@ ceph_components:
     client:
       - '{{ nova_ceph_client }}'
     service: '{{ ceph_nova_service_names }}'
+  - component: gnocchi_api
+    package:
+      - python-ceph
+    client:
+      - '{{ gnocchi_ceph_client }}'
+    service: '{{ ceph_gnocchi_service_names }}'
 
