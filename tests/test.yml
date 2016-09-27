@@ -17,4 +17,4 @@
   hosts: localhost
   connection: local
   roles:
-    - role: "{{ rolename | basename }}"
+    - role: "ceph_client"
