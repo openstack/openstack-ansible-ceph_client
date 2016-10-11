@@ -42,7 +42,7 @@
 
 - name: Register ceph_conf fact when ceph_conf_file is defined
   set_fact:
-     ceph_conf: "{{ ceph_conf_file }}"
+     ceph_conf: "{{ ceph_conf_file }}\n\n"
   when: ceph_conf_file is defined
   tags:
     - ceph-config-get-config
