@@ -31,13 +31,13 @@
       (item.0.component != 'cinder_backup' or
         ((cinder_service_backup_program_enabled is defined and cinder_service_backup_program_enabled | bool) and
           (cinder_service_backup_driver is defined and cinder_service_backup_driver == 'cinder.backup.drivers.ceph')))
-  always_run: true
   changed_when: false
   delegate_to: '{{ ceph_mon_host }}'
   register: ceph_client_keyrings
   until: ceph_client_keyrings|success
   retries: 3
   tags:
+    - always
     - ceph-auth-client-keyrings
 
 - name: Create cephkeys_access_group group
@@ -81,23 +81,22 @@
 - name: Retrieve nova secret from cephcluster
   command: ceph auth get-key client.{{ nova_ceph_client }}
   when: inventory_hostname in groups.nova_compute
-  always_run:   true
   changed_when: false
-  failed_when:  false
   delegate_to: '{{ ceph_mon_host }}'
   register: ceph_nova_secret
   tags:
-  - ceph-auth-nova-libvirt-secret
+    - always
+    - ceph-auth-nova-libvirt-secret
 
 - name: Check if nova secret is defined in libvirt
   shell: virsh secret-list|grep {{ nova_ceph_client_uuid }}
   when: inventory_hostname in groups.nova_compute
-  always_run:   true
-  failed_when:  false
   changed_when: false
+  failed_when:  false
   register: libvirt_nova_defined
   tags:
-  - ceph-auth-nova-libvirt-secret
+    - always
+    - ceph-auth-nova-libvirt-secret
 
 - name: Provide xml file to create the secret
   template:
@@ -122,12 +121,12 @@
 - name: Check if nova secret value is set in libvirt
   command: virsh secret-get-value {{ nova_ceph_client_uuid }}
   when: inventory_hostname in groups.nova_compute
-  always_run:   true
-  failed_when:  false
   changed_when: false
+  failed_when:  false
   register: libvirt_nova_set
   tags:
-  - ceph-auth-nova-libvirt-secret
+    - always
+    - ceph-auth-nova-libvirt-secret
 
 - name: Set nova secret value in libvirt
   shell: virsh secret-set-value --secret {{ nova_ceph_client_uuid }} --base64 {{ ceph_nova_secret.stdout }}
@@ -147,10 +146,9 @@
   file:
     path: "/tmp/nova-secret.xml"
     state: "absent"
-  always_run: true
-  ignore_errors: true
   when: inventory_hostname in groups.nova_compute and libvirt_nova_set
   tags:
+    - always
     - ceph-auth-nova-libvirt-secret
 
 - name: Detect correct group for extra auth

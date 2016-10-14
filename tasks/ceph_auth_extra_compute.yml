@@ -60,25 +60,25 @@
 
 - name: Check if extra secret(s) are defined in libvirt pt1
   shell: "virsh secret-dumpxml {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
-  always_run:   true
-  failed_when:  false
   changed_when: false
+  failed_when:  false
   with_items: ceph_extra_confs
   when:
     - item.secret_uuid is defined
   tags:
+    - always
     - ceph-auth-nova-libvirt-secret
 
 - name: Check if extra secret(s) are defined in libvirt pt2
   shell: "ls /tmp | grep \\.libvirt_secret_exists | awk -F'.' '{print $1}'"
-  always_run:   true
-  failed_when:  false
   changed_when: false
+  failed_when:  false
   register: libvirt_secret_exists
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.secret_uuid is defined
   tags:
+    - always
     - ceph-auth-nova-libvirt-secret
 
 - name: Define libvirt nova extra secret(s)
@@ -96,26 +96,26 @@
 
 - name: Check if extra secret values are set in libvirt pt1
   shell: "virsh secret-get-value {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists "
-  always_run:   true
-  failed_when:  false
   changed_when: false
+  failed_when:  false
   register: libvirt_nova_set
   with_items: ceph_extra_confs
   when:
     - item.secret_uuid is defined
   tags:
+    - always
     - ceph-auth-nova-libvirt-secret
 
 - name: Check if extra secret values are set in libvirt pt2
   shell: "ls /tmp | grep \\.libvirt_secret_value_exists | awk -F'.' '{print $1}'"
-  always_run:   true
-  failed_when:  false
   changed_when: false
+  failed_when:  false
   register: libvirt_secret_value_exists
   with_items: ceph_extra_confs
   when:
     - item.secret_uuid is defined
   tags:
+    - always
     - ceph-auth-nova-libvirt-secret
 
 - name: Set extra secret value(s) in libvirt
@@ -138,29 +138,29 @@
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
     state: "absent"
   with_items: ceph_extra_confs
-  always_run: true
-  ignore_errors: true
+  tags:
+    - always
 
 - name: Remove libvirt nova secret value detection file
   file:
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists"
     state: "absent"
   with_items: ceph_extra_confs
-  always_run: true
-  ignore_errors: true
+  tags:
+    - always
 
 - name: Remove libvirt nova secret file
   file:
     path: "/tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml"
     state: "absent"
   with_items: ceph_extra_confs
-  always_run: true
-  ignore_errors: true
+  tags:
+    - always
 
 - name: Remove libvirt key file
   file:
     path: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     state: "absent"
   with_items: ceph_extra_confs
-  always_run: true
-  ignore_errors: true
+  tags:
+    - always
