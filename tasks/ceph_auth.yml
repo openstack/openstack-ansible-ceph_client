@@ -129,7 +129,8 @@
     - ceph-auth-nova-libvirt-secret
 
 - name: Set nova secret value in libvirt
-  shell: virsh secret-set-value --secret {{ nova_ceph_client_uuid }} --base64 {{ ceph_nova_secret.stdout }}
+  command: virsh secret-set-value --secret {{ nova_ceph_client_uuid }} --base64 {{ ceph_nova_secret.stdout }}
+  changed_when: false
   when: >
         inventory_hostname in groups.nova_compute and libvirt_nova_set.rc is defined
         and

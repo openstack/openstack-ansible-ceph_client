@@ -92,3 +92,4 @@
   tags:
     - ceph-apt-keys
     - ceph-repos
+    - skip_ansible_lint

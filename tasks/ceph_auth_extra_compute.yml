@@ -23,7 +23,8 @@
     - item.mon_host is defined
 
 - name: Get extra key files
-  shell: "scp {{ item.mon_host }}:/etc/ceph/ceph.client.{{ item.client_name }}.key.tmp /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
+  command: "scp {{ item.mon_host }}:/etc/ceph/ceph.client.{{ item.client_name }}.key.tmp /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
+  changed_when: false
   delegate_to: localhost
   with_items: "{{ ceph_extra_confs }}"
   when:
@@ -52,7 +53,7 @@
     src: secret.xml.j2
     dest: /tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml
     mode: "0600"
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   when:
     - item.client_name is defined
     - item.mon_host is defined
@@ -62,7 +63,7 @@
   shell: "virsh secret-dumpxml {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
   changed_when: false
   failed_when:  false
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   when:
     - item.secret_uuid is defined
   tags:
@@ -82,7 +83,8 @@
     - ceph-auth-nova-libvirt-secret
 
 - name: Define libvirt nova extra secret(s)
-  shell: "virsh secret-define --file /tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml"
+  command: "virsh secret-define --file /tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml"
+  changed_when: false
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.client_name is defined
@@ -99,7 +101,7 @@
   changed_when: false
   failed_when:  false
   register: libvirt_nova_set
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   when:
     - item.secret_uuid is defined
   tags:
@@ -111,7 +113,7 @@
   changed_when: false
   failed_when:  false
   register: libvirt_secret_value_exists
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   when:
     - item.secret_uuid is defined
   tags:
@@ -120,7 +122,7 @@
 
 - name: Set extra secret value(s) in libvirt
   shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(cat /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp)"
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   when:
     - item.client_name is defined
     - item.mon_host is defined
@@ -137,7 +139,7 @@
   file:
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
     state: "absent"
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   tags:
     - always
 
@@ -145,7 +147,7 @@
   file:
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists"
     state: "absent"
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   tags:
     - always
 
@@ -153,7 +155,7 @@
   file:
     path: "/tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml"
     state: "absent"
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   tags:
     - always
 
@@ -161,6 +163,6 @@
   file:
     path: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     state: "absent"
-  with_items: ceph_extra_confs
+  with_items: "{{ ceph_extra_confs }}"
   tags:
     - always

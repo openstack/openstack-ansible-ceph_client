@@ -15,12 +15,14 @@
 
 - name: Register rados module path
   command: python -c 'import rados; print rados.__file__'
+  changed_when: false
   register: rados_module_path
   tags:
     - ceph-python-libs
 
 - name: Register rbd module path
   command: python -c 'import rbd; print rbd.__file__'
+  changed_when: false
   register: rbd_module_path
   tags:
     - ceph-python-libs

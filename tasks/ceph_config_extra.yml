@@ -15,7 +15,8 @@
 
 
 - name: Get extra ceph.conf files
-  shell: "scp {{ item.mon_host }}:/etc/ceph/ceph.conf {{ item.src }}"
+  command: "scp {{ item.mon_host }}:/etc/ceph/ceph.conf {{ item.src }}"
+  changed_when: false
   delegate_to: localhost
   with_items: "{{ ceph_extra_confs }}"
   when:
