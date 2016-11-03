@@ -14,26 +14,22 @@
 # limitations under the License.
 
 # look for 1 ceph monitor host that is up
-- name:           Verify Ceph monitors are up
-  # using netcat instead of wait_for allows to both check the rc and the
-  # output, rc not being available using wait_for + failed_when: false
-  # failed_when: false  is needed to not loose any hosts, as this check expects
-  # some to be down.
-  local_action:   command nc -w 1 {{ item }} 22
-  with_items:     "{{ ceph_mons }}"
-  changed_when:   false
-  failed_when:    false
-  register:       ceph_mon_upcheck
+- name: Verify Ceph monitors are up
+  local_action: command ssh -o ConnectTimeout=1 {{ item }} exit
+  with_items: "{{ ceph_mons }}"
+  changed_when: false
+  failed_when: false
+  register: ceph_mon_upcheck
   tags:
   - ceph-config-create-config
   - ceph-auth-client-keyrings
   - ceph-auth-nova-libvirt-secret
 
-- name:           Set ceph_mon_host to an online monitor host
+- name: Set ceph_mon_host to an online monitor host
   set_fact:
-                  ceph_mon_host: '{{ item.item }}'
-  when:           item.rc == 0 and "OpenSSH" in item.stdout
-  with_items:     "{{ ceph_mon_upcheck.results }}"
+    ceph_mon_host: '{{ item.item }}'
+  when: item.rc == 0
+  with_items: "{{ ceph_mon_upcheck.results }}"
   tags:
   - ceph-config-create-config
   - ceph-auth-client-keyrings
