@@ -71,25 +71,10 @@
   apt_repository:
     repo: "{{ ceph_apt_repos[ceph_pkg_source].repo }}"
     state: "{{ ceph_apt_repos[ceph_pkg_source].state }}"
+    update_cache: yes
   register: add_repos
   until: add_repos|success
   retries: 5
   delay: 2
   tags:
     - ceph-repos
-
-# This is being added specifically for when a key is revoked, but should apply
-# to other tasks also.  The cache needs updating after changing keys but
-# ceph_install.yml (where packages get installed) only does so if cache > 600
-# seconds.
-- name: Update apt cache
-  apt:
-    update_cache: yes
-  when: (revoke_keys|changed or
-        add_keys|changed or
-        add_keys_fallback|changed or
-        add_repos|changed)
-  tags:
-    - ceph-apt-keys
-    - ceph-repos
-    - skip_ansible_lint
