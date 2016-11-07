@@ -174,9 +174,8 @@
 - name: Detect extra nova uuid secret
   set_fact:
     ceph_extra_nova_uuid: True
-  with_items: "{{ ceph_extra_confs }}"
+  with_items: "{{ ceph_extra_confs | default([]) }}"
   when:
-    - ceph_extra_confs is defined
     - inventory_hostname in groups[ceph_extra_compute_group]
     - item.secret_uuid is defined
   tags:
