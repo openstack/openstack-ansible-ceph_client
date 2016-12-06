@@ -15,7 +15,13 @@
 
 # look for 1 ceph monitor host that is up
 - name: Verify Ceph monitors are up
-  local_action: command ssh -o ConnectTimeout=1 {{ item }} exit
+  local_action: >
+    command ssh
+    -o ConnectTimeout=1
+    -o UserKnownHostsFile=/dev/null
+    -o StrictHostKeyChecking=no
+    {{ item }}
+    exit
   with_items: "{{ ceph_mons }}"
   changed_when: false
   failed_when: false
