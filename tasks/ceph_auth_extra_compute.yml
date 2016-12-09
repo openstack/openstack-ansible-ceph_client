@@ -33,6 +33,18 @@
     - ceph-config-create-config
     - ceph-config-extra
 
+- name: Distribute extra key files
+  copy:
+    src: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
+    dest: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
+  with_items: "{{ ceph_extra_confs }}"
+  when:
+    - item.mon_host is defined
+    - item.client_name is defined
+  tags:
+    - ceph-config-create-config
+    - ceph-config-extra
+
 - name: Remove temp extra key files
   file:
     path: "/etc/ceph/ceph.client.{{ item.client_name }}.key.tmp"
@@ -162,5 +174,14 @@
     path: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     state: "absent"
   with_items: ceph_extra_confs
+  tags:
+    - always
+
+- name: Remove libvirt key file localhost
+  file:
+    path: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
+    state: "absent"
+  delegate_to: localhost
+  with_items: "{{ ceph_extra_confs }}"
   tags:
     - always
