@@ -16,7 +16,6 @@
   service:
     name: "{{ item.1 }}"
     state: restarted
-    pattern: "{{ item.1 }}"
   with_subelements:
   - "{{ ceph_components }}"
   - service
