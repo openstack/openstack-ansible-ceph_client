@@ -10,6 +10,9 @@ OpenStack-Ansible Ceph client
 This Ansible role installs the Ceph operating system
 packages used to interact with a Ceph cluster.
 
+To clone or view the source code for this repository, visit the role repository
+for `ceph_client <https://github.com/openstack/openstack-ansible-ceph_client>`_.
+
 Default variables
 ~~~~~~~~~~~~~~~~~
 
