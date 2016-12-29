@@ -72,7 +72,7 @@ The example uses ``cephx`` authentication, and requires existing ``glance`` and
     glance_default_store: rbd
     nova_libvirt_images_rbd_pool: ephemeral-vms
 
-.. _Deploying SSH Keys: targethosts-prepare.html#deploying-ssh-keys
+.. _Deploying SSH Keys: http://docs.openstack.org/project-deploy-guide/openstack-ansible/newton/targethosts-prepare.html#deploying-secure-shell-ssh-keys
 
 Extra client configuration files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
