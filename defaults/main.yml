@@ -42,7 +42,7 @@ ceph_client_package_state: "latest"
 #            unlike the other options does not attempt to manage package keys or add additional
 #            package repositories.
 ceph_pkg_source: ceph
-ceph_apt_pinned_packages: [{ package: "*", release: Inktank,  priority: 1001 }]
+ceph_apt_pinned_packages: [{ package: "*", release: "RedHat",  priority: 1001 }]
 
 # Ubuntu Cloud Archive mirror URL
 # This is only used if 'uca' is the selected option for ceph_pkg_source
