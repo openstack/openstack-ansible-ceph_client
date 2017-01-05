@@ -29,5 +29,6 @@
         and gnocchi_storage_driver is defined
         and gnocchi_storage_driver == 'ceph')
   tags:
-  - ceph-client
+    - ceph-client
+    - always
 
