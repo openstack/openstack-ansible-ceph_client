@@ -37,7 +37,9 @@
   static: no
   when:
     - ceph_pkg_source != 'distro'
-  tags:     ceph-preinstall
+  tags:
+    - ceph-preinstall
+    - ceph-install
 
 - include:  ceph_install.yml
   tags:     ceph-install
@@ -59,4 +61,6 @@
 - include:  ceph_auth.yml
   static: no
   when: cephx | bool
-  tags:     ceph-auth
+  tags:
+   - ceph-auth
+   - ceph-config
