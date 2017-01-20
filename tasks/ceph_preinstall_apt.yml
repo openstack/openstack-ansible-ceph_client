@@ -71,6 +71,7 @@
   apt_repository:
     repo: "{{ ceph_apt_repos[ceph_pkg_source].repo }}"
     state: "{{ ceph_apt_repos[ceph_pkg_source].state }}"
+    filename: "{{ ceph_apt_repos[ceph_pkg_source].filename | default(omit) }}"
   register: add_repos
   until: add_repos|success
   retries: 5
