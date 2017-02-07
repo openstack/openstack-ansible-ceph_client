@@ -34,7 +34,7 @@ ceph_apt_repo_url_region: "download"  # or "eu" for Netherlands based mirror
 ceph_apt_repo_url: "http://{{ ceph_apt_repo_url_region }}.ceph.com/debian-{{ ceph_stable_release }}/"
 
 # Ubuntu Cloud Archive variables
-uca_openstack_release: newton
+uca_openstack_release: ocata
 uca_repo_dist: "{{ ansible_lsb.codename }}-updates/{{ uca_openstack_release }}"
 
 # Apt repositories
