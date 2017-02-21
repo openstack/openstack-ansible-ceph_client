@@ -39,7 +39,7 @@ ceph_components:
     service: '{{ ceph_cinder_service_names }}'
   - component: nova_compute
     package:
-      - libvirt-bin
+      - "{{ libvirt_package }}"
       - ceph-common
       - python-ceph
     client:

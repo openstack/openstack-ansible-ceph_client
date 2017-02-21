@@ -12,3 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# Ceph GPG Keys
+ceph_gpg_keys: 'https://download.ceph.com/keys/release.asc'
+
+libvirt_package: libvirt-daemon-kvm
+ceph_repo_url_region: "download" # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
+ceph_yum_repo_url: "https://{{ ceph_repo_url_region }}.ceph.com/rpm-{{ ceph_stable_release }}/el7"
+
+# TODO mgariepy: add CentOS SIG ceph repo.

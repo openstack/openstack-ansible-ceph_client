@@ -14,9 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: ceph_preinstall_apt.yml
+- include: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
   static: no
-  when:
-    - ansible_pkg_mgr == 'apt'
   tags:
     - ceph-apt-keys
+    - ceph-rpm-keys
+    - ceph-repos
