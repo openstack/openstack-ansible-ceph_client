@@ -25,7 +25,6 @@ ceph_components:
     service: '{{ ceph_glance_service_names }}'
   - component: cinder_volume
     package:
-      - ceph # TODO: remove this once http://tracker.ceph.com/issues/11388 is resolved
       - ceph-common
       - python-ceph
     client:
@@ -33,7 +32,6 @@ ceph_components:
     service: '{{ ceph_cinder_service_names }}'
   - component: cinder_backup
     package:
-      - ceph # TODO: remove this once http://tracker.ceph.com/issues/11388 is resolved
       - ceph-common
       - python-ceph
     client:
@@ -42,7 +40,6 @@ ceph_components:
   - component: nova_compute
     package:
       - libvirt-bin
-      - ceph # TODO: remove this once http://tracker.ceph.com/issues/11388 is resolved
       - ceph-common
       - python-ceph
     client:
