@@ -22,9 +22,8 @@
   failed_when: false
   retries: 5
   delay: 2
-  when: ceph_pkg_source == 'ceph'
-  tags:
-    - ceph-rpm-keys
+  when:
+    - ceph_pkg_source == 'ceph'
 
 - name: Add ceph repo
   yum_repository:
@@ -36,8 +35,6 @@
     enabled: yes
     gpgkey: "{{ ceph_gpg_keys }}"
     state: present
-  tags:
-    - ceph-repos
 
 - name: Add ceph noarch repo
   yum_repository:
@@ -49,6 +46,3 @@
     enabled: yes
     gpgkey: "{{ ceph_gpg_keys }}"
     state: present
-  tags:
-    - ceph-repos
-

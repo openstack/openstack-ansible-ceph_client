@@ -30,9 +30,6 @@
   when:
     - item.mon_host is defined
     - item.client_name is defined
-  tags:
-    - ceph-config-create-config
-    - ceph-config-extra
 
 - name: Distribute extra key files
   copy:
@@ -42,9 +39,6 @@
   when:
     - item.mon_host is defined
     - item.client_name is defined
-  tags:
-    - ceph-config-create-config
-    - ceph-config-extra
 
 - name: Remove temp extra key files
   file:
@@ -56,9 +50,6 @@
     - item.mon_host is defined
     - item.keyring_src is defined
     - item.client_name is defined
-  tags:
-    - ceph-config-create-config
-    - ceph-config-extra
 
 - name: Provide extra xml files to create the secrets
   template:
@@ -80,7 +71,6 @@
     - item.secret_uuid is defined
   tags:
     - always
-    - ceph-auth-nova-libvirt-secret
 
 - name: Check if extra secret(s) are defined in libvirt pt2
   shell: "ls /tmp | grep \\.libvirt_secret_exists | awk -F'.' '{print $1}'"
@@ -92,7 +82,6 @@
     - item.secret_uuid is defined
   tags:
     - always
-    - ceph-auth-nova-libvirt-secret
 
 - name: Define libvirt nova extra secret(s)
   command: "virsh secret-define --file /tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml"
@@ -105,8 +94,6 @@
     - item.secret_uuid not in libvirt_secret_exists.results[0].stdout_lines
   notify:
     - Restart os services
-  tags:
-    - ceph-auth-nova-libvirt-secret
 
 - name: Check if extra secret values are set in libvirt pt1
   shell: "virsh secret-get-value {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists "
@@ -116,9 +103,6 @@
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.secret_uuid is defined
-  tags:
-    - always
-    - ceph-auth-nova-libvirt-secret
 
 - name: Check if extra secret values are set in libvirt pt2
   shell: "ls /tmp | grep \\.libvirt_secret_value_exists | awk -F'.' '{print $1}'"
@@ -130,7 +114,6 @@
     - item.secret_uuid is defined
   tags:
     - always
-    - ceph-auth-nova-libvirt-secret
 
 - name: Set extra secret value(s) in libvirt
   shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(cat /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp)"
@@ -142,11 +125,8 @@
     - item.secret_uuid  not in  libvirt_secret_value_exists.results[0].stdout_lines
   notify:
     - Restart os services
-  tags:
-    - ceph-auth-nova-libvirt-secret
 
 # Cleanup temp files
-
 - name: Remove libvirt nova secret detection file
   file:
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_exists"

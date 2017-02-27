@@ -26,17 +26,10 @@
   changed_when: false
   failed_when: false
   register: ceph_mon_upcheck
-  tags:
-  - ceph-config-create-config
-  - ceph-auth-client-keyrings
-  - ceph-auth-nova-libvirt-secret
 
 - name: Set ceph_mon_host to an online monitor host
   set_fact:
     ceph_mon_host: '{{ item.item }}'
-  when: item.rc == 0
+  when:
+    - item.rc == 0
   with_items: "{{ ceph_mon_upcheck.results }}"
-  tags:
-  - ceph-config-create-config
-  - ceph-auth-client-keyrings
-  - ceph-auth-nova-libvirt-secret
