@@ -17,15 +17,11 @@
   command: python -c 'import rados; print rados.__file__'
   changed_when: false
   register: rados_module_path
-  tags:
-    - ceph-python-libs
 
 - name: Register rbd module path
   command: python -c 'import rbd; print rbd.__file__'
   changed_when: false
   register: rbd_module_path
-  tags:
-    - ceph-python-libs
 
 - name: Link rados module into the venv
   file:
@@ -35,8 +31,6 @@
     force: "yes"
   notify:
     - Restart os services
-  tags:
-    - ceph-python-libs
 
 - name: Link rbd module into the venv
   file:
@@ -46,5 +40,3 @@
     force: "yes"
   notify:
     - Restart os services
-  tags:
-    - ceph-python-libs

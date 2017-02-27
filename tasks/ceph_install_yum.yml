@@ -22,10 +22,9 @@
   retries: 5
   delay: 2
   with_subelements:
-  - "{{ ceph_components }}"
-  - package
-  when: inventory_hostname in groups[item.0.component]
+    - "{{ ceph_components }}"
+    - package
+  when:
+    - inventory_hostname in groups[item.0.component]
   notify:
-  - Restart os services
-  tags:
-  - ceph-yum-packages
+    - Restart os services

@@ -15,13 +15,11 @@
 
 - name: Provide ceph configuration directory
   file:
-    dest:   /etc/ceph
-    state:  directory
-    owner:  root
-    group:  root
-    mode:   0755
-  tags:
-    - ceph-config-create-dir
+    dest: /etc/ceph
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 - name: Get ceph.conf and store contents when ceph_conf_file is not defined
   slurp:
@@ -29,23 +27,20 @@
   register: ceph_conf_content_mon
   delegate_to: '{{ ceph_mon_host }}'
   changed_when: false
-  when: ceph_conf_file is not defined
-  tags:
-    - ceph-config-get-config
+  when:
+    - ceph_conf_file is not defined
 
 - name: Register ceph_conf fact when ceph_conf_file is not defined
   set_fact:
-     ceph_conf: "{{ ceph_conf_content_mon.content | b64decode }}"
-  when: ceph_conf_file is not defined
-  tags:
-    - ceph-config-get-config
+    ceph_conf: "{{ ceph_conf_content_mon.content | b64decode }}"
+  when:
+    - ceph_conf_file is not defined
 
 - name: Register ceph_conf fact when ceph_conf_file is defined
   set_fact:
-     ceph_conf: "{{ ceph_conf_file }}\n\n"
-  when: ceph_conf_file is defined
-  tags:
-    - ceph-config-get-config
+    ceph_conf: "{{ ceph_conf_file }}\n\n"
+  when:
+    - ceph_conf_file is defined
 
 - name: Create ceph.conf from mon host
   copy:
@@ -55,26 +50,18 @@
     group:  root
     mode:   0644
   notify:
-  - Restart os services
-  tags:
-    - ceph-config-create-config
+    - Restart os services
 
 - name: Detect correct group for extra config
   set_fact:
     ceph_in_extra_config_group: True
   when:
-     - ceph_extra_confs is defined
-     - inventory_hostname in groups[item]
+    - ceph_extra_confs is defined
+    - inventory_hostname in groups[item]
   with_items: "{{ ceph_extra_config_groups }}"
-  tags:
-    - ceph-config
-    - ceph-config-extra
 
 - include: ceph_config_extra.yml
   when:
     - ceph_in_extra_config_group is defined
     - ceph_in_extra_config_group | bool
   static: no
-  tags:
-    - ceph-config
-    - ceph-config-extra

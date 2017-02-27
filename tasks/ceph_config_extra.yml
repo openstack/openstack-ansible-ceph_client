@@ -22,9 +22,6 @@
   when:
     - item.mon_host is defined
     - item.src is defined
-  tags:
-    - ceph-config-create-config
-    - ceph-config-extra
 
 - name: Create extra ceph.conf files
   copy:
@@ -39,9 +36,6 @@
   when:
     - item.src is defined
     - item.dest is defined
-  tags:
-    - ceph-config-create-config
-    - ceph-config-extra
 
 - name: Add keyring section to extra ceph.conf files
   ini_file:
