@@ -13,16 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# if glance, cinder and/or nova use rbd, ceph_conf needs to be defined
-- name: Ensure ceph_mons is populated
-  assert:
-    that:
-      - ceph_mons != []
-      - ceph_mons | list == ceph_mons
-  tags:
-    - ceph-config
-    - ceph-auth
-
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
   with_first_found:
@@ -34,34 +24,35 @@
   tags:
     - always
 
-- include:  ceph_preinstall.yml
+- include: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
   static: no
   when:
     - ceph_pkg_source != 'distro'
   tags:
-    - ceph-preinstall
     - ceph-install
 
-- include:  ceph_install.yml
-  tags:     ceph-install
+- include: "ceph_install_{{ ansible_pkg_mgr }}.yml"
+  tags:
+    - ceph-install
 
 - include: ceph_install_python_libs.yml
   static: no
-  when: openstack_service_venv_bin != ''
+  when:
+    - openstack_service_venv_bin != ''
   tags:
     - ceph-install
 
 - include: ceph_get_mon_host.yml
   tags:
     - ceph-config
-    - ceph-auth
 
-- include:  ceph_config.yml
-  tags:     ceph-config
-
-- include:  ceph_auth.yml
-  static: no
-  when: cephx | bool
+- include: ceph_config.yml
   tags:
-   - ceph-auth
+    - ceph-config
+
+- include: ceph_auth.yml
+  static: no
+  when:
+    - cephx | bool
+  tags:
    - ceph-config

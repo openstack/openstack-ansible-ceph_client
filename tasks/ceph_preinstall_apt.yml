@@ -19,9 +19,8 @@
     state: "absent"
   register: revoke_keys
   with_items: "{{ ceph_revoked_gpg_keys }}"
-  when: ceph_pkg_source == 'ceph'
-  tags:
-    - ceph-apt-keys
+  when:
+    - ceph_pkg_source == 'ceph'
 
 - name: Add ceph apt-keys
   apt_key:
@@ -36,9 +35,8 @@
   retries: 5
   delay: 2
   with_items: "{{ ceph_gpg_keys }}"
-  when: ceph_pkg_source == 'ceph'
-  tags:
-    - ceph-apt-keys
+  when:
+    - ceph_pkg_source == 'ceph'
 
 - name: Add ceph apt-keys using fallback keyserver
   apt_key:
@@ -51,21 +49,18 @@
   retries: 5
   delay: 2
   with_items: "{{ ceph_gpg_keys }}"
-  when: ceph_pkg_source == 'ceph' and
-        add_keys|failed and
-        (item.fallback_keyserver is defined or
-         item.fallback_url is defined)
-  tags:
-    - ceph-apt-keys
+  when:
+    - ceph_pkg_source | lower == 'ceph'
+    - add_keys | failed
+    - item.fallback_keyserver is defined or item.fallback_url is defined
 
 - name: add ubuntu cloud archive key package
   apt:
     pkg: ubuntu-cloud-keyring
     state: "{{ ceph_client_package_state }}"
   register: add_keys
-  when: ceph_pkg_source == 'uca'
-  tags:
-    - ceph-apt-keys
+  when:
+    - ceph_pkg_source | lower == 'uca'
 
 - name: Add ceph repo(s)
   apt_repository:
@@ -77,5 +72,3 @@
   until: add_repos|success
   retries: 5
   delay: 2
-  tags:
-    - ceph-repos

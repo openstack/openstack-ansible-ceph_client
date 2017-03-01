@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-
 ## Ceph client keyrings
 
 #TODO: also be able to create users, keys and pools on ceph
@@ -24,25 +22,29 @@
   # output to put in a keyring; ceph admin should have already created the user
   shell: ceph auth get client.{{ item.1 }} >/dev/null && ceph auth get-or-create client.{{ item.1 }}
   with_subelements:
-  - "{{ ceph_components }}"
-  - client
-  when: >
-    inventory_hostname in groups[item.0.component] and
-      (item.0.component != 'cinder_backup' or
-        ((cinder_service_backup_program_enabled is defined and cinder_service_backup_program_enabled | bool) and
-          (cinder_service_backup_driver is defined and cinder_service_backup_driver == 'cinder.backup.drivers.ceph')))
+    - "{{ ceph_components }}"
+    - client
+  when:
+    - inventory_hostname in groups[item.0.component]
+    - (item.0.component != 'cinder_backup' or
+       ((cinder_service_backup_program_enabled is defined and
+         cinder_service_backup_program_enabled | bool) and
+         (cinder_service_backup_driver is defined and
+          cinder_service_backup_driver == 'cinder.backup.drivers.ceph')))
   changed_when: false
   delegate_to: '{{ ceph_mon_host }}'
   register: ceph_client_keyrings
   until: ceph_client_keyrings|success
   retries: 3
   tags:
+    - ceph-config
     - always
-    - ceph-auth-client-keyrings
 
 - name: Create cephkeys_access_group group
   group:
     name: "{{ cephkeys_access_group }}"
+  tags:
+    - ceph-install
 
 - name: Add OpenStack service to cephkeys_access_group group
   user:
@@ -50,7 +52,7 @@
     groups: "{{ cephkeys_access_group }}"
     append: yes
   notify:
-  - Restart os services
+    - Restart os services
 
 - name: Provision ceph client keyrings
   # TODO: do we really need a template for this? what's the added value compare to
@@ -70,33 +72,33 @@
     # access needed by users libvirt-qemu and nova
     mode:     0640
   with_items: "{{ ceph_client_keyrings.results }}"
-  when: not item | skipped and inventory_hostname in groups[item.item.0.component]
+  when:
+    - not item | skipped
+    - inventory_hostname in groups[item.item.0.component]
   notify:
-  - Restart os services
-  tags:
-  - ceph-auth-client-keyrings
+    - Restart os services
 
 ## Ceph nova client libvirt secret
 
 - name: Retrieve nova secret from cephcluster
   command: ceph auth get-key client.{{ nova_ceph_client }}
-  when: inventory_hostname in groups.nova_compute
+  when:
+    - inventory_hostname in groups.nova_compute
   changed_when: false
   delegate_to: '{{ ceph_mon_host }}'
   register: ceph_nova_secret
   tags:
     - always
-    - ceph-auth-nova-libvirt-secret
 
 - name: Check if nova secret is defined in libvirt
   shell: virsh secret-list|grep {{ nova_ceph_client_uuid }}
-  when: inventory_hostname in groups.nova_compute
+  when:
+    - inventory_hostname in groups.nova_compute
   changed_when: false
   failed_when:  false
   register: libvirt_nova_defined
   tags:
     - always
-    - ceph-auth-nova-libvirt-secret
 
 - name: Provide xml file to create the secret
   template:
@@ -106,51 +108,56 @@
   with_items:
     - secret_uuid: "{{ nova_ceph_client_uuid }}"
       client_name: "{{ nova_ceph_client }}"
-  when: inventory_hostname in groups.nova_compute and libvirt_nova_defined.rc is defined and libvirt_nova_defined.rc != 0
+  when:
+    - inventory_hostname in groups.nova_compute
+    - libvirt_nova_defined.rc is defined
+    - libvirt_nova_defined.rc != 0
   tags:
-    - ceph-auth-nova-libvirt-secret
+    - always
 
 - name: Define libvirt nova secret
   command: virsh secret-define --file /tmp/nova-secret.xml
-  when: inventory_hostname in groups.nova_compute and libvirt_nova_defined.rc is defined and libvirt_nova_defined.rc != 0
+  when:
+    - inventory_hostname in groups.nova_compute
+    - libvirt_nova_defined.rc is defined
+    - libvirt_nova_defined.rc != 0
   notify:
-  - Restart os services
+    - Restart os services
   tags:
-  - ceph-auth-nova-libvirt-secret
+    - always
 
 - name: Check if nova secret value is set in libvirt
   command: virsh secret-get-value {{ nova_ceph_client_uuid }}
-  when: inventory_hostname in groups.nova_compute
+  when:
+    - inventory_hostname in groups.nova_compute
   changed_when: false
   failed_when:  false
   register: libvirt_nova_set
   tags:
     - always
-    - ceph-auth-nova-libvirt-secret
 
 - name: Set nova secret value in libvirt
   command: virsh secret-set-value --secret {{ nova_ceph_client_uuid }} --base64 {{ ceph_nova_secret.stdout }}
   changed_when: false
-  when: >
-        inventory_hostname in groups.nova_compute and libvirt_nova_set.rc is defined
-        and
-        (libvirt_nova_set.rc != 0
-        or
-        (libvirt_nova_set.rc == 0 and libvirt_nova_set.stdout != ceph_nova_secret.stdout)
-        )
+  when:
+    - inventory_hostname in groups.nova_compute
+    - libvirt_nova_set.rc is defined
+    - libvirt_nova_set.rc != 0 or
+      (libvirt_nova_set.rc == 0 and
+       libvirt_nova_set.stdout != ceph_nova_secret.stdout)
   notify:
-  - Restart os services
+    - Restart os services
   tags:
-  - ceph-auth-nova-libvirt-secret
+    - ceph-config
 
 - name: Remove libvirt nova secret file
   file:
     path: "/tmp/nova-secret.xml"
     state: "absent"
-  when: inventory_hostname in groups.nova_compute and libvirt_nova_set
+  when:
+    - inventory_hostname in groups.nova_compute and libvirt_nova_set
   tags:
     - always
-    - ceph-auth-nova-libvirt-secret
 
 - name: Detect correct group for extra auth
   set_fact:
@@ -159,18 +166,12 @@
   when:
     - ceph_extra_confs is defined
     - inventory_hostname in groups[item]
-  tags:
-    - ceph-auth
-    - ceph-auth-extra
 
 - include: ceph_auth_extra.yml
   when:
     - ceph_in_extra_auth_group is defined
     - ceph_in_extra_auth_group | bool
   static: no
-  tags:
-    - ceph-auth
-    - ceph-auth-extra
 
 - name: Detect extra nova uuid secret
   set_fact:
@@ -179,17 +180,9 @@
   when:
     - inventory_hostname in groups[ceph_extra_compute_group]
     - item.secret_uuid is defined
-  tags:
-    - ceph-auth
-    - ceph-auth-extra
-    - ceph-auth-libvirt-extra
 
 - include: ceph_auth_extra_compute.yml
   when:
     - ceph_extra_nova_uuid is defined
     - ceph_extra_nova_uuid | bool
   static: no
-  tags:
-    - ceph-auth
-    - ceph-auth-extra
-    - ceph-auth-libvirt-extra
