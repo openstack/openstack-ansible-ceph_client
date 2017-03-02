@@ -76,8 +76,13 @@
   tags:
   - ceph-auth-client-keyrings
 
-## Ceph nova client libvirt secret
+- name: Make sure libvirt is started
+  service:
+    name: "{{ libvirt_service_name }}"
+    state: "started"
+  when: inventory_hostname in groups.nova_compute
 
+## Ceph nova client libvirt secret
 - name: Retrieve nova secret from cephcluster
   command: ceph auth get-key client.{{ nova_ceph_client }}
   when: inventory_hostname in groups.nova_compute
