@@ -37,6 +37,7 @@ ceph_apt_repo_url: "http://{{ ceph_apt_repo_url_region }}.ceph.com/debian-{{ cep
 uca_openstack_release: ocata
 uca_repo_dist: "{{ ansible_lsb.codename }}-updates/{{ uca_openstack_release }}"
 libvirt_package: libvirt-bin
+libvirt_service_name: libvirt-bin
 
 # Apt repositories
 ceph_apt_repos:
