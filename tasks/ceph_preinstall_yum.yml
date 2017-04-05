@@ -33,6 +33,7 @@
     baseurl: "{{ceph_yum_repo_url}}/$basearch"
     gpgcheck: yes
     enabled: yes
+    priority: 50
     gpgkey: "{{ ceph_gpg_keys }}"
     state: present
 
@@ -44,5 +45,6 @@
     baseurl: "{{ceph_yum_repo_url}}/noarch"
     gpgcheck: yes
     enabled: yes
+    priority: 50
     gpgkey: "{{ ceph_gpg_keys }}"
     state: present
