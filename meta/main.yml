@@ -18,7 +18,7 @@ galaxy_info:
   description: Installation and configuration of the ceph client
   company: OpenStack Foundation
   license: Apache2
-  min_ansible_version: 1.9.4
+  min_ansible_version: 2.2
   platforms:
     - name: Ubuntu
       versions:
