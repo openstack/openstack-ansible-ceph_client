@@ -1,5 +1,5 @@
 ---
-# Copyright 2017, Marc Gariépy <gariepy.marc@gmail.com>
+# Copyright 2015, Serge van Ginderachter <serge@vanginderachter.be>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
 # limitations under the License.
 
 - name: Install ceph packages
-  yum:
+  package:
     name: '{{ item.1 }}'
     state: "{{ ceph_client_package_state }}"
+    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
   register: install_packages
   until: install_packages|success
   retries: 5

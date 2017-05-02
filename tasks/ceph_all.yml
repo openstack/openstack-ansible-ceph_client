@@ -25,13 +25,12 @@
     - always
 
 - include: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
-  static: no
   when:
     - ceph_pkg_source != 'distro'
   tags:
     - ceph-install
 
-- include: "ceph_install_{{ ansible_pkg_mgr }}.yml"
+- include: ceph_install.yml
   tags:
     - ceph-install
 
