@@ -31,6 +31,8 @@
     - item.mon_host is defined
     - item.keyring_src is defined
     - item.client_name is defined
+  vars:
+    ansible_python_interpreter: "/usr/bin/python"
 
 - name: Secure extra keyring file permissions
   file:
@@ -41,6 +43,8 @@
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.keyring_src is defined
+  vars:
+    ansible_python_interpreter: "/usr/bin/python"
 
 - name: Remove temp extra keyring files
   file:
