@@ -30,6 +30,8 @@
   when:
     - item.mon_host is defined
     - item.client_name is defined
+  vars:
+    ansible_python_interpreter: "/usr/bin/python"
 
 - name: Distribute extra key files
   copy:
@@ -165,5 +167,7 @@
     state: "absent"
   delegate_to: localhost
   with_items: "{{ ceph_extra_confs }}"
+  vars:
+    ansible_python_interpreter: "/usr/bin/python"
   tags:
     - always
