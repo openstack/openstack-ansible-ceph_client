@@ -19,21 +19,21 @@
 ceph_components:
   - component: glance_api
     package:
-      - python-ceph
+      - "{{ python_ceph_package }}"
     client:
       - '{{ glance_ceph_client }}'
     service: '{{ ceph_glance_service_names }}'
   - component: cinder_volume
     package:
       - ceph-common
-      - python-ceph
+      - "{{ python_ceph_package }}"
     client:
       - '{{ cinder_ceph_client }}'
     service: '{{ ceph_cinder_service_names }}'
   - component: cinder_backup
     package:
       - ceph-common
-      - python-ceph
+      - "{{ python_ceph_package }}"
     client:
       - '{{ cinder_backup_ceph_client }}'
     service: '{{ ceph_cinder_service_names }}'
@@ -41,13 +41,13 @@ ceph_components:
     package:
       - "{{ libvirt_package }}"
       - ceph-common
-      - python-ceph
+      - "{{ python_ceph_package }}"
     client:
       - '{{ nova_ceph_client }}'
     service: '{{ ceph_nova_service_names }}'
   - component: gnocchi_api
     package:
-      - python-ceph
+      - "{{ python_ceph_package }}"
     client:
       - '{{ gnocchi_ceph_client }}'
     service: '{{ ceph_gnocchi_service_names }}'

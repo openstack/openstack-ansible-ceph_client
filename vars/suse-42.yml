@@ -1,5 +1,5 @@
 ---
-# Copyright 2015, Serge van Ginderachter <serge@vanginderachter.be>
+# Copyright 2017, SUSE LINUX GmbH.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Ceph GPG Keys
-ceph_gpg_keys: 'https://download.ceph.com/keys/release.asc'
-
-libvirt_package: libvirt-daemon-kvm
+libvirt_package: qemu-kvm
 libvirt_service_name: libvirtd
 
-python_ceph_package: python-ceph
+python_ceph_package: python-cephfs
 
-ceph_repo_url_region: "download" # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
-ceph_yum_repo_url: "https://{{ ceph_repo_url_region }}.ceph.com/rpm-{{ ceph_stable_release }}/el7"
-
-# TODO mgariepy: add CentOS SIG ceph repo.
+# NOTE(hwoarang) Upstream does not provide openSUSE packages
+# so we always set ceph_pkg_source to 'distro' for openSUSE
+ceph_pkg_source: 'distro'
