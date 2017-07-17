@@ -143,5 +143,21 @@ IP addresses for the Ceph Monitor servers in the deployment:
       - 172.29.244.152
       - 172.29.244.153
 
+Configure os_gnocchi with ceph_client
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the os_gnocchi role is going to utilize the ceph_client role, the following
+configurations need to be added to the user variable file:
+
+.. code-block:: yaml
+
+  ceph_extra_components:
+    - component: gnocchi_api
+      package:
+        - "{{ python_ceph_package }}"
+      client:
+        - '{{ gnocchi_ceph_client }}'
+      service: '{{ ceph_gnocchi_service_names }}'
+
 
 .. _Ceph Monitor: http://docs.ceph.com/docs/master/rados/configuration/mon-config-ref/

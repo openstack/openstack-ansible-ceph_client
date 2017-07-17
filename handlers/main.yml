@@ -17,7 +17,7 @@
     name: "{{ item.1 }}"
     state: restarted
   with_subelements:
-  - "{{ ceph_components }}"
+  - "{{ ceph_components + ceph_extra_components }}"
   - service
   when: inventory_hostname in groups[item.0.component]
   failed_when: false
