@@ -45,10 +45,14 @@ ceph_components:
     client:
       - '{{ nova_ceph_client }}'
     service: '{{ ceph_nova_service_names }}'
-  - component: gnocchi_api
-    package:
-      - "{{ python_ceph_package }}"
-    client:
-      - '{{ gnocchi_ceph_client }}'
-    service: '{{ ceph_gnocchi_service_names }}'
 
+ceph_extra_components: []
+# Gnocchi has been moved out from the integrated OSA repo, but can still
+# be optionally enabled by using the configuration in the os_gnocchi role repo
+# under the 'extras' directory
+#  - component: gnocchi_api
+#    package:
+#      - "{{ python_ceph_package }}"
+#    client:
+#      - '{{ gnocchi_ceph_client }}'
+#    service: '{{ ceph_gnocchi_service_names }}'
