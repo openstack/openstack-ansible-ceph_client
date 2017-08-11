@@ -15,17 +15,17 @@
 
 - include: ceph_all.yml
   when: >
-        (inventory_hostname in groups['glance_api']
+        ('glance_api' in group_names
         and glance_default_store == 'rbd')
         or
-        (inventory_hostname in groups['cinder_volume']
-        and cinder_backend_rbd_inuse|bool)
+        ('cinder_volume' in group_names
+        and cinder_backend_rbd_inuse | bool)
         or
-        (inventory_hostname in groups['nova_compute']
-        and (cinder_backends_rbd_inuse|bool or
+        ('nova_compute' in group_names
+        and (cinder_backends_rbd_inuse | bool or
         nova_libvirt_images_rbd_pool is defined))
         or
-        (inventory_hostname in groups['gnocchi_api']
+        ('gnocchi_api' in group_names
         and gnocchi_storage_driver is defined
         and gnocchi_storage_driver == 'ceph')
   tags:
