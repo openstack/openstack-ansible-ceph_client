@@ -56,3 +56,42 @@ ceph_extra_components: []
 #    client:
 #      - '{{ gnocchi_ceph_client }}'
 #    service: '{{ ceph_gnocchi_service_names }}'
+
+ceph_client_filtered_packages: |-
+ {% set packages = [] %}
+ {% for comp in (ceph_components + ceph_extra_components) %}
+ {%   if comp.component in group_names %}
+ {%     for pkg_name in comp.package %}
+ {%       if pkg_name not in packages %}
+ {%          set _ = packages.apend(pkg_name) %}
+ {%       endif %}
+ {%     endfor %}
+ {%   endif %}
+ {% endfor %}
+ {{ packages }}
+
+ceph_client_filtered_services: |-
+ {% set services = [] %}
+ {% for comp in (ceph_components + ceph_extra_components) %}
+ {%   if comp.component in group_names %}
+ {%     set _ = services.append(comp.service) %}
+ {%   endif %}
+ {% endfor %}
+ {{ service }}
+
+ceph_client_filtered_clients: |-
+ {% set clients = [] %}
+ {% for comp in (ceph_components + ceph_extra_components) %}
+ {%   if comp.component in group_names %}
+ {%     if ((comp.component != 'cinder_backup') or
+           ((cinder_service_backup_program_enabled is defined and
+             cinder_service_backup_program_enabled | bool) and
+            (cinder_service_backup_driver is defined and
+             cinder_service_backup_driver == 'cinder.backup.drivers.ceph'))) %}
+ {%       for client in comp.client %}
+ {%         _ = clients.append(client)
+ {%       endfor %}
+ {%     endif %}
+ {%   endif %}
+ {% endfor %}
+ {{ clients }}

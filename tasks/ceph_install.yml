@@ -15,7 +15,7 @@
 
 - name: Install ceph packages
   package:
-    name: '{{ item.1 }}'
+    name: '{{ ceph_client_filtered_packages }}'
     state: "{{ ceph_client_package_state }}"
     update_cache: "{{ (ansible_pkg_mgr in ['apt', 'zypper']) | ternary('yes', omit) }}"
     cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
@@ -23,10 +23,5 @@
   until: install_packages|success
   retries: 5
   delay: 2
-  with_subelements:
-    - "{{ ceph_components + ceph_extra_components }}"
-    - package
-  when:
-    - inventory_hostname in groups[item.0.component]
   notify:
     - Restart os services
