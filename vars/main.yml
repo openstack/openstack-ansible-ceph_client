@@ -89,7 +89,7 @@ ceph_client_filtered_clients: |-
             (cinder_service_backup_driver is defined and
              cinder_service_backup_driver == 'cinder.backup.drivers.ceph'))) %}
  {%       for client in comp.client %}
- {%         _ = clients.append(client)
+ {%         _ = clients.append(client) %}
  {%       endfor %}
  {%     endif %}
  {%   endif %}
