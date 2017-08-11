@@ -63,7 +63,7 @@ ceph_client_filtered_packages: |-
  {%   if comp.component in group_names %}
  {%     for pkg_name in comp.package %}
  {%       if pkg_name not in packages %}
- {%          set _ = packages.apend(pkg_name) %}
+ {%          set _ = packages.append(pkg_name) %}
  {%       endif %}
  {%     endfor %}
  {%   endif %}
