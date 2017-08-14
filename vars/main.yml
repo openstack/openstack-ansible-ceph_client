@@ -77,7 +77,7 @@ ceph_client_filtered_services: |-
  {%     set _ = services.append(comp.service) %}
  {%   endif %}
  {% endfor %}
- {{ service }}
+ {{ services }}
 
 ceph_client_filtered_clients: |-
  {% set clients = [] %}
