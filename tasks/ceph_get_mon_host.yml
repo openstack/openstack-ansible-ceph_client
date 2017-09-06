@@ -17,7 +17,7 @@
 - name: Verify Ceph monitors are up
   local_action: >
     command ssh
-    -o ConnectTimeout=1
+    -o ConnectTimeout=6
     -o UserKnownHostsFile=/dev/null
     -o StrictHostKeyChecking=no
     {{ item }}
@@ -33,3 +33,9 @@
   when:
     - item.rc == 0
   with_items: "{{ ceph_mon_upcheck.results }}"
+
+- name: Fail when no ceph_mon_host is reachable
+  fail:
+    msg: "No Ceph Monitor reachable"
+  when:
+    - ceph_mon_host is undefined
