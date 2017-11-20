@@ -13,9 +13,63 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: ceph_all.yml
+- name: Gather variables for each operating system
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}.yml"
+    - "{{ ansible_os_family | lower }}.yml"
+  tags:
+    - always
+
+- include: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
+  when:
+    - ceph_mons != []
+    - ceph_mons | list == ceph_mons
+    - ceph_pkg_source != 'distro'
+  tags:
+    - ceph-install
+
+- include: ceph_install.yml
+  static: no
+  when:
+    - ceph_mons != []
+    - ceph_mons | list == ceph_mons
+  tags:
+    - ceph-install
+
+- include: ceph_install_python_libs.yml
+  static: no
+  when:
+    - ceph_mons != []
+    - ceph_mons | list == ceph_mons
+    - openstack_service_venv_bin != ''
+  tags:
+    - ceph-install
+
+- include: ceph_get_mon_host.yml
+  static: no
   when:
     - ceph_mons != []
     - ceph_mons | list == ceph_mons
   tags:
     - ceph-config
+
+- include: ceph_config.yml
+  static: no
+  when:
+    - ceph_mons != []
+    - ceph_mons | list == ceph_mons
+  tags:
+    - ceph-config
+
+- include: ceph_auth.yml
+  static: no
+  when:
+    - cephx | bool
+    - ceph_mons != []
+    - ceph_mons | list == ceph_mons
+  tags:
+   - ceph-config
