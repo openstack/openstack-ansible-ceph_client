@@ -87,10 +87,6 @@
 - name: Update apt cache
   apt:
     update_cache: yes
-  when: (revoke_keys|changed or
-        add_keys|changed or
-        (add_keys_fallback is defined and add_keys_fallback|changed) or
-        add_repos|changed)
   tags:
     - ceph-apt-keys
     - ceph-repos

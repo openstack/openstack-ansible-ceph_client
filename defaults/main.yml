@@ -104,3 +104,6 @@ ceph_extra_config_groups:
   - cinder_backup
   - cinder_volume
 ceph_extra_compute_group: nova_compute
+
+# Set the ceph client release (This is only available when deploying on Ubuntu 16.04)
+ceph_stable_release: hammer
