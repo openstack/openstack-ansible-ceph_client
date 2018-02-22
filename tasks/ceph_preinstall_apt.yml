@@ -62,13 +62,26 @@
   when:
     - ceph_pkg_source == 'uca'
 
+# When updating the cache in the apt_repository
+# task, and the update fails, a retry does not
+# detect a change the second attempt and therefore
+# does not update the cache, resulting in a changed
+# repo config, but no updated cache. To work around
+# this bug we implement the change of repo config
+# and the cache update as two seperate tasks.
 - name: Add ceph repo(s)
   apt_repository:
     repo: "{{ ceph_apt_repos[ceph_pkg_source].repo }}"
     state: "{{ ceph_apt_repos[ceph_pkg_source].state }}"
     filename: "{{ ceph_apt_repos[ceph_pkg_source].filename | default(omit) }}"
-    update_cache: yes
+    update_cache: no
   register: add_repos
-  until: add_repos|success
+
+- name: Update Apt cache
+  apt:
+    update_cache: yes
+  when: add_repos | changed
+  register: update_apt_cache
+  until: update_apt_cache | success
   retries: 5
   delay: 2
