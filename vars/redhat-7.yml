@@ -19,7 +19,8 @@ ceph_gpg_keys: 'https://download.ceph.com/keys/release.asc'
 libvirt_package: libvirt-daemon-kvm
 libvirt_service_name: libvirtd
 
-python_ceph_package: python-ceph
+python_ceph_packages:
+  - python-ceph
 
 ceph_repo_url_region: "download" # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
 ceph_yum_repo_url: "https://{{ ceph_repo_url_region }}.ceph.com/rpm-{{ ceph_stable_release }}/el7"
