@@ -22,6 +22,7 @@
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio
+        - openstack-ansible-integrated-deploy-ceph
     gate:
       jobs:
         - openstack-ansible-linters
