@@ -16,7 +16,10 @@
 libvirt_package: qemu-kvm
 libvirt_service_name: libvirtd
 
-python_ceph_package: python-cephfs
+python_ceph_package:
+  - python-cephfs
+  - python-rados
+  - python3-rados
 
 # NOTE(hwoarang) Upstream does not provide openSUSE packages
 # so we always set ceph_pkg_source to 'distro' for openSUSE
