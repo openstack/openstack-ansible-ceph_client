@@ -16,7 +16,7 @@
 libvirt_package: qemu-kvm
 libvirt_service_name: libvirtd
 
-python_ceph_package:
+python_ceph_packages:
   - python-cephfs
   - python-rados
   - python3-rados
