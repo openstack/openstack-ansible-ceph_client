@@ -19,7 +19,8 @@ libvirt_service_name: libvirtd
 python_ceph_packages:
   - python-cephfs
   - python-rados
-  - python3-rados
+  - python-rbd
+  - python-rgw
 
 # NOTE(hwoarang) Upstream does not provide openSUSE packages
 # so we always set ceph_pkg_source to 'distro' for openSUSE
