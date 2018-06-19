@@ -14,5 +14,8 @@ OpenStack-Ansible Ceph client
 Documentation for the project can be found at:
   https://docs.openstack.org/openstack-ansible-ceph_client/latest
 
+Release notes for the project can be found at:
+  https://docs.openstack.org/releasenotes/openstack-ansible-ceph_client/
+
 The project home is at:
   https://launchpad.net/openstack-ansible
