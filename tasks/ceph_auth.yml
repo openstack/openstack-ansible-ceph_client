@@ -34,8 +34,6 @@
 - name: Create cephkeys_access_group group
   group:
     name: "{{ cephkeys_access_group }}"
-  tags:
-    - ceph-install
 
 - name: Add OpenStack service to cephkeys_access_group group
   user:
