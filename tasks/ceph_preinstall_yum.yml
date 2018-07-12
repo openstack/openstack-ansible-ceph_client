@@ -18,7 +18,7 @@
     key: "{{ ceph_gpg_keys }}"
     state: "present"
   register: add_keys
-  until: add_keys|success
+  until: add_keys is success
   failed_when: false
   retries: 5
   delay: 2

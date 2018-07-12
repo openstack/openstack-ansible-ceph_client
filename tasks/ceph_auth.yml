@@ -25,7 +25,7 @@
   changed_when: false
   delegate_to: '{{ ceph_mon_host }}'
   register: ceph_client_keyrings
-  until: ceph_client_keyrings|success
+  until: ceph_client_keyrings is success
   retries: 3
   tags:
     - ceph-config
