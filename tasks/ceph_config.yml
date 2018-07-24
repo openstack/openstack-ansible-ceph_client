@@ -60,7 +60,7 @@
     - inventory_hostname in groups[item]
   with_items: "{{ ceph_extra_config_groups }}"
 
-- include: ceph_config_extra.yml
+- include_tasks: ceph_config_extra.yml
   when:
     - ceph_in_extra_config_group is defined
     - ceph_in_extra_config_group | bool
