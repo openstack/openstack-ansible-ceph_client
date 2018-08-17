@@ -24,7 +24,7 @@
   tags:
     - always
 
-- include: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
+- include_tasks: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
   when:
     - ceph_mons != []
     - ceph_mons | list == ceph_mons
@@ -32,7 +32,7 @@
   tags:
     - ceph-install
 
-- include: ceph_install.yml
+- include_tasks: ceph_install.yml
   static: no
   when:
     - ceph_mons != []
@@ -40,7 +40,7 @@
   tags:
     - ceph-install
 
-- include: ceph_install_python_libs.yml
+- include_tasks: ceph_install_python_libs.yml
   static: no
   when:
     - ceph_mons != []
@@ -49,7 +49,7 @@
   tags:
     - ceph-install
 
-- include: ceph_get_mon_host.yml
+- include_tasks: ceph_get_mon_host.yml
   static: no
   when:
     - ceph_mons != []
@@ -57,7 +57,7 @@
   tags:
     - ceph-config
 
-- include: ceph_config.yml
+- include_tasks: ceph_config.yml
   static: no
   when:
     - ceph_mons != []
@@ -65,7 +65,7 @@
   tags:
     - ceph-config
 
-- include: ceph_auth.yml
+- include_tasks: ceph_auth.yml
   static: no
   when:
     - cephx | bool

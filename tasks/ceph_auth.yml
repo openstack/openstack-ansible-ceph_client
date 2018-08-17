@@ -160,7 +160,7 @@
     - ceph_extra_confs is defined
     - inventory_hostname in groups[item]
 
-- include: ceph_auth_extra.yml
+- include_tasks: ceph_auth_extra.yml
   when:
     - ceph_in_extra_auth_group is defined
     - ceph_in_extra_auth_group | bool
@@ -174,7 +174,7 @@
     - inventory_hostname in groups[ceph_extra_compute_group]
     - item.secret_uuid is defined
 
-- include: ceph_auth_extra_compute.yml
+- include_tasks: ceph_auth_extra_compute.yml
   when:
     - ceph_extra_nova_uuid is defined
     - ceph_extra_nova_uuid | bool
