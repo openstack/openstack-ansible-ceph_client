@@ -20,6 +20,8 @@
     -o ConnectTimeout=6
     -o UserKnownHostsFile=/dev/null
     -o StrictHostKeyChecking=no
+    -l "{{ ceph_mon_user }}"
+    -p "{{ ansible_port }}"
     {{ item }}
     exit
   with_items: "{{ ceph_mons }}"

@@ -56,6 +56,9 @@ cephx: true
 # A list of the IP addresses for your Ceph monitors
 ceph_mons: []
 
+# User, wich is used for establishing SSH connection to ceph_mons
+ceph_mon_user: "{{ ansible_user }}"
+
 # Path to local ceph.conf file
 # Leave this commented to obtain a ceph.conf from one of the monitors defined in ceph_mons
 #ceph_conf_file: |
