@@ -26,7 +26,6 @@
     src: /etc/ceph/ceph.conf
   register: ceph_conf_content_mon
   delegate_to: '{{ ceph_mon_host }}'
-  remote_user: '{{ ceph_mon_user }}'
   changed_when: false
   when:
     - ceph_conf_file is not defined
