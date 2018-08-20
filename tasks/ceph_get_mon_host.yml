@@ -21,7 +21,7 @@
     -o UserKnownHostsFile=/dev/null
     -o StrictHostKeyChecking=no
     -l "{{ ceph_mon_user }}"
-    -p "{{ ansible_port }}"
+    -p "{{ ansible_port|default('22') }}"
     {{ item }}
     exit
   with_items: "{{ ceph_mons }}"
