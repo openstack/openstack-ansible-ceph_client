@@ -13,6 +13,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Install EPEL gpg keys
+  rpm_key:
+    key: "http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
+    state: present
+  when:
+    - ansible_pkg_mgr in ['yum','dnf']
+  register: _add_yum_keys
+  until: _add_yum_keys is success
+  retries: 5
+  delay: 2
+
+- name: Install the EPEL repository
+  yum_repository:
+    name: ceph-client-deps
+    baseurl: "{{ (centos_epel_mirror | default ('http://download.fedoraproject.org/pub/epel')) ~ '/' ~ ansible_distribution_major_version ~ '/' ~ ansible_architecture }}"
+    description: 'Extra Packages for Enterprise Linux 7 - $basearch'
+    gpgcheck: yes
+    enabled: yes
+    state: present
+    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb'
+  when:
+    - ansible_pkg_mgr in ['yum', 'dnf']
+  register: install_epel_repo
+  until: install_epel_repo  is success
+  retries: 5
+  delay: 2
+
 - name: Add ceph rpm key
   rpm_key:
     key: "{{ ceph_gpg_keys }}"
