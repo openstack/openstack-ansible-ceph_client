@@ -164,7 +164,6 @@
   when:
     - ceph_in_extra_auth_group is defined
     - ceph_in_extra_auth_group | bool
-  static: no
 
 - name: Detect extra nova uuid secret
   set_fact:
@@ -178,4 +177,3 @@
   when:
     - ceph_extra_nova_uuid is defined
     - ceph_extra_nova_uuid | bool
-  static: no

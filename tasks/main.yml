@@ -33,7 +33,6 @@
     - ceph-install
 
 - include_tasks: ceph_install.yml
-  static: no
   when:
     - ceph_mons != []
     - ceph_mons | list == ceph_mons
@@ -41,7 +40,6 @@
     - ceph-install
 
 - include_tasks: ceph_install_python_libs.yml
-  static: no
   when:
     - ceph_mons != []
     - ceph_mons | list == ceph_mons
@@ -50,7 +48,6 @@
     - ceph-install
 
 - include_tasks: ceph_get_mon_host.yml
-  static: no
   when:
     - ceph_mons != []
     - ceph_mons | list == ceph_mons
@@ -58,7 +55,6 @@
     - ceph-config
 
 - include_tasks: ceph_config.yml
-  static: no
   when:
     - ceph_mons != []
     - ceph_mons | list == ceph_mons
@@ -66,7 +62,6 @@
     - ceph-config
 
 - include_tasks: ceph_auth.yml
-  static: no
   when:
     - cephx | bool
     - ceph_mons != []
