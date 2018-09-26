@@ -43,7 +43,7 @@ ceph_client_package_state: "latest"
 #            package repositories.
 ceph_pkg_source: ceph
 ceph_stable_release: luminous
-ceph_apt_pinned_packages: [{ package: "*", release: "RedHat",  priority: 1001 }]
+ceph_apt_pinned_packages: [{ package: "*", release: "ceph.com",  priority: 1001 }]
 
 # Ubuntu Cloud Archive mirror URL
 # This is only used if 'uca' is the selected option for ceph_pkg_source
