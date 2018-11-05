@@ -13,6 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: End playbook if disabled
+  meta: end_play
+  when:
+    - ceph_mons | list | length == 0
+  tags:
+    - always
+
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
   with_first_found:
@@ -26,45 +33,30 @@
 
 - include_tasks: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
   when:
-    - ceph_mons != []
-    - ceph_mons | list == ceph_mons
     - ceph_pkg_source != 'distro'
   tags:
     - ceph-install
 
 - include_tasks: ceph_install.yml
-  when:
-    - ceph_mons != []
-    - ceph_mons | list == ceph_mons
   tags:
     - ceph-install
 
 - include_tasks: ceph_install_python_libs.yml
   when:
-    - ceph_mons != []
-    - ceph_mons | list == ceph_mons
     - openstack_service_venv_bin != ''
   tags:
     - ceph-install
 
 - include_tasks: ceph_get_mon_host.yml
-  when:
-    - ceph_mons != []
-    - ceph_mons | list == ceph_mons
   tags:
     - ceph-config
 
 - include_tasks: ceph_config.yml
-  when:
-    - ceph_mons != []
-    - ceph_mons | list == ceph_mons
   tags:
     - ceph-config
 
 - include_tasks: ceph_auth.yml
   when:
     - cephx | bool
-    - ceph_mons != []
-    - ceph_mons | list == ceph_mons
   tags:
    - ceph-config
