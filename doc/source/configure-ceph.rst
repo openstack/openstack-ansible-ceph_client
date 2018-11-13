@@ -15,7 +15,7 @@ These links provide details on how to use Ceph with OpenStack:
 
 .. _Ceph Block Devices and OpenStack: http://docs.ceph.com/docs/master/rbd/rbd-openstack/
 .. _Ceph - The De Facto Storage Backend for OpenStack: https://www.openstack.org/summit/openstack-summit-hong-kong-2013/session-videos/presentation/ceph-the-de-facto-storage-backend-for-openstack
-.. _OpenStack Config Reference - Ceph RADOS Block Device (RBD): http://docs.openstack.org/liberty/config-reference/content/ceph-rados.html
+.. _OpenStack Config Reference - Ceph RADOS Block Device (RBD): https://docs.openstack.org/liberty/config-reference/content/ceph-rados.html
 .. _OpenStack-Ansible and Ceph Working Example: https://www.openstackfaq.com/openstack-ansible-ceph/
 
 .. note::
@@ -72,7 +72,7 @@ The example uses ``cephx`` authentication, and requires existing ``glance`` and
     glance_default_store: rbd
     nova_libvirt_images_rbd_pool: ephemeral-vms
 
-.. _Deploying SSH Keys: http://docs.openstack.org/project-deploy-guide/openstack-ansible/draft/targethosts-prepare.html#deploying-secure-shell-ssh-keys
+.. _Deploying SSH Keys: https://docs.openstack.org/project-deploy-guide/openstack-ansible/draft/targethosts-prepare.html#deploying-secure-shell-ssh-keys
 
 Extra client configuration files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
