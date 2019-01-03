@@ -15,13 +15,10 @@
 
 # look for 1 ceph monitor host that is up
 - name: Verify Ceph monitors are up
-  local_action: >
-    command ssh
-    -o ConnectTimeout=6
-    -o UserKnownHostsFile=/dev/null
-    -o StrictHostKeyChecking=no
-    {{ item }}
-    exit
+  wait_for_connection:
+    connect_timeout: 3
+    timeout: 10
+  delegate_to: "{{ item }}"
   with_items: "{{ ceph_mons }}"
   changed_when: false
   failed_when: false
@@ -31,7 +28,9 @@
   set_fact:
     ceph_mon_host: '{{ item.item }}'
   when:
-    - item.rc == 0
+    - item|success
+    # Use the first available monitor
+    - ceph_mon_host is not defined
   with_items: "{{ ceph_mon_upcheck.results }}"
 
 - name: Fail when no ceph_mon_host is reachable
