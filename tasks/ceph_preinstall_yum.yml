@@ -13,14 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Install EPEL gpg keys
-  rpm_key:
-    key: "http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
-    state: present
+- name: Copy EPEL gpg keyfile to the key location
+  copy:
+    src: "gpg/{{ item.key | basename }}"
+    dest: "{{ item.key }}"
+    mode: '0644'
+  with_items: "{{ epel_gpg_keys }}"
   when:
     - ansible_pkg_mgr in ['yum','dnf']
-  register: _add_yum_keys
-  until: _add_yum_keys is success
+
+- name: Install EPEL gpg keys
+  rpm_key: "{{ key }}"
+  with_items: "{{ epel_gpg_keys }}"
+  loop_control:
+    loop_var: key
+  when:
+    - ansible_pkg_mgr in ['yum','dnf']
+  register: _add_epel_keys
+  until: _add_epel_keys is success
   retries: 5
   delay: 2
 
@@ -40,17 +50,26 @@
   retries: 5
   delay: 2
 
-- name: Add ceph rpm key
-  rpm_key:
-    key: "{{ ceph_gpg_keys }}"
-    state: "present"
-  register: add_keys
-  until: add_keys is success
-  failed_when: false
-  retries: 5
-  delay: 2
+- name: Copy Ceph gpg keyfile to the key location
+  copy:
+    src: "gpg/{{ item.key | basename }}"
+    dest: "{{ item.key }}"
+    mode: '0644'
+  with_items: "{{ ceph_gpg_keys }}"
   when:
     - ceph_pkg_source == 'ceph'
+
+- name: Install Ceph gpg keys
+  rpm_key: "{{ key }}"
+  with_items: "{{ ceph_gpg_keys }}"
+  loop_control:
+    loop_var: key
+  when:
+    - ceph_pkg_source == 'ceph'
+  register: _add_ceph_keys
+  until: _add_ceph_keys is success
+  retries: 5
+  delay: 2
 
 - name: Add ceph repo
   yum_repository:

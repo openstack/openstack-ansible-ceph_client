@@ -14,7 +14,14 @@
 # limitations under the License.
 
 # Ceph GPG Keys
-ceph_gpg_keys: 'https://download.ceph.com/keys/release.asc'
+ceph_gpg_keys:
+  # download.ceph.com/keys/release.asc
+  - key: /etc/pki/rpm-gpg/ceph_com_keys_release
+
+# EPEL GPG Keys
+epel_gpg_keys:
+  # Extra Packages for Enterprise Linux 7
+  - key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
 
 libvirt_package: libvirt-daemon-kvm
 libvirt_service_name: libvirtd

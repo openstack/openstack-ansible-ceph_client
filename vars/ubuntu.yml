@@ -18,11 +18,12 @@
 cache_timeout: 600
 
 # Ceph GPG Keys
+# This should be a list of dicts, with each dict giving
+# a valid set of arguments to the apt_key module. These
+# could specify either a key file or a URL.
 ceph_gpg_keys:
-  - key_name: 'ceph'
-    keyserver: 'hkp://keyserver.ubuntu.com:80'
-    fallback_keyserver: 'hkp://p80.pool.sks-keyservers.net:80'
-    hash_id: '0xe84ac2c0460f3994'
+  - id: 460f3994
+    file: /etc/ssl/ceph-key
 
 # The apt-key command won't del a key when you give it the hash_id, so we have
 # to use the short key ID here instead.
