@@ -56,7 +56,7 @@
 
 - name: Link rados module into the venv
   file:
-    src: "{{ rados_module_path.stdout }}"
+    src: "{{ rados_module_path.stdout | replace('.pyc', '.py') }}"
     dest: "{{ venv_python_lib_folder }}/site-packages/{{ rados_module_path.stdout | basename | replace('.pyc', '.py') }}"
     state: link
     force: "yes"
@@ -65,7 +65,7 @@
 
 - name: Link rbd module into the venv
   file:
-    src: "{{ rbd_module_path.stdout }}"
+    src: "{{ rbd_module_path.stdout | replace('.pyc', '.py') }}"
     dest: "{{ venv_python_lib_folder }}/site-packages/{{ rbd_module_path.stdout | basename | replace('.pyc', '.py') }}"
     state: link
     force: "yes"
@@ -74,7 +74,7 @@
 
 - name: Link cephfs module into the venv
   file:
-    src: "{{ cephfs_module_path.stdout }}"
+    src: "{{ cephfs_module_path.stdout | replace('.pyc', '.py') }}"
     dest: "{{ openstack_service_venv_bin | dirname }}/lib/python2.7/site-packages/{{ cephfs_module_path.stdout | basename | replace('.pyc', '.py') }}"
     state: link
     force: "yes"
@@ -85,7 +85,7 @@
 
 - name: Link ceph_volume_client module into the venv
   file:
-    src: "{{ ceph_volume_client_module_path.stdout }}"
+    src: "{{ ceph_volume_client_module_path.stdout | replace('.pyc', '.py') }}"
     dest: "{{ openstack_service_venv_bin | dirname }}/lib/python2.7/site-packages/{{ ceph_volume_client_module_path.stdout | basename | replace('.pyc', '.py') }}"
     state: link
     force: "yes"
@@ -96,7 +96,7 @@
 
 - name: Link ceph_argparse module into the venv
   file:
-    src: "{{ ceph_argparse_module_path.stdout }}"
+    src: "{{ ceph_argparse_module_path.stdout | replace('.pyc', '.py') }}"
     dest: "{{ openstack_service_venv_bin | dirname }}/lib/python2.7/site-packages/{{ ceph_argparse_module_path.stdout | basename | replace('.pyc', '.py') }}"
     state: link
     force: "yes"
