@@ -37,6 +37,11 @@ ceph_components:
     client:
       - '{{ nova_ceph_client }}'
     service: '{{ ceph_nova_service_names }}'
+  - component: manila_share
+    package: "{{ ['ceph-common'] + python_ceph_packages  }}"
+    client:
+      - "{{ manila_ceph_client }}"
+    service: "{{ ceph_manila_service_names }}"
 
 ceph_extra_components: []
 # Gnocchi has been moved out from the integrated OSA repo, but can still

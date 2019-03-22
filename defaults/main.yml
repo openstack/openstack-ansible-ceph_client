@@ -70,6 +70,7 @@ ceph_mons: []
 # Ceph client usernames for glance, cinder+nova and gnocchi
 glance_ceph_client: glance
 cinder_ceph_client: cinder
+manila_ceph_client: manila
 cinder_backup_ceph_client: cinder-backup
 gnocchi_ceph_client: gnocchi
 
@@ -92,6 +93,11 @@ ceph_cinder_service_names:
 
 ceph_nova_service_names:
   - nova-compute
+
+ceph_manila_service_names:
+  - manila-api
+  - manila-data
+  - manila-share
 
 ceph_glance_service_names:
   - glance-api
