@@ -42,7 +42,7 @@
     gpgcheck: yes
     enabled: yes
     state: present
-    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb'
+    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath'
   when:
     - ansible_pkg_mgr in ['yum', 'dnf']
   register: install_epel_repo
