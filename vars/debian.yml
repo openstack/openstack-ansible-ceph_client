@@ -37,8 +37,8 @@ ceph_apt_repo_url: "http://{{ ceph_apt_repo_url_region }}.ceph.com/debian-{{ cep
 # Ubuntu Cloud Archive variables
 uca_openstack_release: pike
 uca_repo_dist: "{{ ansible_lsb.codename }}-updates/{{ uca_openstack_release }}"
-libvirt_package: libvirt-bin
-libvirt_service_name: libvirt-bin
+libvirt_package: "{{ (ansible_distribution == 'Debian') | ternary('libvirt-daemon-system', 'libvirt-bin') }}"
+libvirt_service_name: libvirtd
 
 python_ceph_packages:
   - python-ceph
