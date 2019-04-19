@@ -31,6 +31,12 @@
   tags:
     - always
 
+- name: Fail if ceph_pkg_source uses an incorrect parameter
+  fail:
+    msg: "Invalid value for ceph_pkg_source. Valid parameters are ceph, distro."
+  when:
+    - ceph_pkg_source not in ['ceph', 'distro']
+
 - include_tasks: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
   when:
     - ceph_pkg_source != 'distro'
