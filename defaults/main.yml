@@ -35,19 +35,12 @@ ceph_client_package_state: "latest"
 #          adjust items such as Ceph release and regional download mirror can be found
 #          in vars/*.yml
 #
-#   * uca  This option installs Ceph from the Ubuntu Cloud Archive. Additional variables
-#          to adjust items such as the OpenStack/Ceph release can be found in vars/*.yml.
-#
 #   * distro This options installs Ceph from the operating system's default repository and
 #            unlike the other options does not attempt to manage package keys or add additional
 #            package repositories.
 ceph_pkg_source: ceph
 ceph_stable_release: luminous
 ceph_apt_pinned_packages: [{ package: "*", release: "ceph.com",  priority: 1001 }]
-
-# Ubuntu Cloud Archive mirror URL
-# This is only used if 'uca' is the selected option for ceph_pkg_source
-uca_apt_repo_url: "http://ubuntu-cloud.archive.canonical.com/ubuntu"
 
 # Ceph Authentication
 cephx: true
