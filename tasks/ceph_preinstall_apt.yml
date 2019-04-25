@@ -41,14 +41,6 @@
   when:
     - ceph_pkg_source == 'ceph'
 
-- name: add ubuntu cloud archive key package
-  apt:
-    pkg: ubuntu-cloud-keyring
-    state: "{{ ceph_client_package_state }}"
-  register: add_keys
-  when:
-    - ceph_pkg_source == 'uca'
-
 # When updating the cache in the apt_repository
 # task, and the update fails, a retry does not
 # detect a change the second attempt and therefore
