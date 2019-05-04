@@ -62,7 +62,7 @@
     mode:     0640
   with_items: "{{ ceph_client_keyrings.results }}"
   when:
-    - not item | skipped
+    - not item is skipped
   notify:
     - Restart os services
 
