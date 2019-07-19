@@ -60,6 +60,17 @@ ceph_mons: []
 #  auth_service_required = cephx
 #  auth_client_required = cephx
 
+# Path to local keyrings directory
+# If you want to provide keyrings from existing files, because you do not have ssh access to the monitors
+# set the path to the repository containing the keyrings files.
+# ie : ceph_keyrings_dir: /etc/openstack_deploy/ceph-conf
+# The filenames inside the keyring directory must be in the structure of client-name.keyring
+# ie: /etc/openstack_deploy/ceph-conf
+# cinder.keyring
+# glance.keyring
+# etc..
+#ceph_keyrings_dir: "/etc/openstack/ceph-keyrings"
+
 # Ceph client usernames for glance, cinder+nova and gnocchi
 glance_ceph_client: glance
 cinder_ceph_client: cinder

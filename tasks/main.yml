@@ -65,4 +65,4 @@
   when:
     - cephx | bool
   tags:
-   - ceph-config
+    - ceph-config
