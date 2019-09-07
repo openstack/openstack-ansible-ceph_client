@@ -37,19 +37,19 @@
   register: rbd_module_path
 
 - name: Register cephfs module path
-  command: python -c 'import cephfs; print cephfs.__file__'
+  command: "{{ ceph_python_interp }} -c 'import cephfs; print cephfs.__file__'"
   changed_when: false
   failed_when: false
   register: cephfs_module_path
 
 - name: Register ceph_volume_client path
-  command: python -c 'import ceph_volume_client; print ceph_volume_client.__file__'
+  command: "{{ ceph_python_interp }} -c 'import ceph_volume_client; print ceph_volume_client.__file__'"
   changed_when: false
   failed_when: false
   register: ceph_volume_client_module_path
 
 - name: Register ceph_argparse path
-  command: python -c 'import ceph_argparse; print ceph_argparse.__file__'
+  command: "{{ ceph_python_interp }} -c 'import ceph_argparse; print ceph_argparse.__file__'"
   changed_when: false
   failed_when: false
   register: ceph_argparse_module_path
@@ -75,7 +75,7 @@
 - name: Link cephfs module into the venv
   file:
     src: "{{ cephfs_module_path.stdout | replace('.pyc', '.py') }}"
-    dest: "{{ openstack_service_venv_bin | dirname }}/lib/python2.7/site-packages/{{ cephfs_module_path.stdout | basename | replace('.pyc', '.py') }}"
+    dest: "{{ venv_python_lib_folder }}//site-packages/{{ cephfs_module_path.stdout | basename | replace('.pyc', '.py') }}"
     state: link
     force: "yes"
   when:
@@ -86,7 +86,7 @@
 - name: Link ceph_volume_client module into the venv
   file:
     src: "{{ ceph_volume_client_module_path.stdout | replace('.pyc', '.py') }}"
-    dest: "{{ openstack_service_venv_bin | dirname }}/lib/python2.7/site-packages/{{ ceph_volume_client_module_path.stdout | basename | replace('.pyc', '.py') }}"
+    dest: "{{ venv_python_lib_folder }}/site-packages/{{ ceph_volume_client_module_path.stdout | basename | replace('.pyc', '.py') }}"
     state: link
     force: "yes"
   when:
@@ -97,7 +97,7 @@
 - name: Link ceph_argparse module into the venv
   file:
     src: "{{ ceph_argparse_module_path.stdout | replace('.pyc', '.py') }}"
-    dest: "{{ openstack_service_venv_bin | dirname }}/lib/python2.7/site-packages/{{ ceph_argparse_module_path.stdout | basename | replace('.pyc', '.py') }}"
+    dest: "{{ venv_python_lib_folder }}/site-packages/{{ ceph_argparse_module_path.stdout | basename | replace('.pyc', '.py') }}"
     state: link
     force: "yes"
   when:
