@@ -40,6 +40,8 @@ libvirt_service_name: libvirtd
 
 python_ceph_packages:
   - python-ceph
+  - python3-rados
+  - python3-rbd
 
 # Apt repositories
 ceph_apt_repos:
