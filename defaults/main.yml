@@ -39,7 +39,7 @@ ceph_client_package_state: "latest"
 #            unlike the other options does not attempt to manage package keys or add additional
 #            package repositories.
 ceph_pkg_source: ceph
-ceph_stable_release: luminous
+ceph_stable_release: nautilus
 ceph_apt_pinned_packages: [{ package: "*", release: "ceph.com",  priority: 1001 }]
 
 # Ceph Authentication
@@ -76,7 +76,7 @@ nova_ceph_client: '{{ cinder_ceph_client }}'
 # overruled in user_secrets:
 # TODO(odyssey4me) - the uuid should be removed, there should be no defaults for secrets
 nova_ceph_client_uuid: 457eb676-33da-42ec-9a8c-9293d545c337
-cephkeys_access_group: cephkeys
+cephkeys_access_group: ceph
 
 openstack_service_system_user: null
 
