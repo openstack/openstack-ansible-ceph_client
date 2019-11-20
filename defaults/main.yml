@@ -104,3 +104,5 @@ ceph_extra_config_groups:
   - cinder_backup
   - cinder_volume
 ceph_extra_compute_group: nova_compute
+
+ceph_client_ceph_conf_overrides: "{{ ceph_conf_overrides | default({}) }}"
