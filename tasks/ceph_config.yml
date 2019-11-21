@@ -43,12 +43,14 @@
     - ceph_conf_file is defined
 
 - name: Create ceph.conf from mon host
-  copy:
+  config_template:
     content: '{{ ceph_conf }}'
     dest: /etc/ceph/ceph.conf
     owner:  root
     group:  root
     mode:   0644
+    config_type: ini
+    config_overrides: '{{ ceph_client_ceph_conf_overrides }}'
   notify:
     - Restart os services
 
