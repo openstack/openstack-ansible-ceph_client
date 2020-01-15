@@ -37,19 +37,19 @@
   register: rbd_module_path
 
 - name: Register cephfs module path
-  command: "{{ ceph_python_interp }} -c 'import cephfs; print cephfs.__file__'"
+  command: "{{ ceph_python_interp }} -c 'import cephfs; print(cephfs.__file__)'"
   changed_when: false
   failed_when: false
   register: cephfs_module_path
 
 - name: Register ceph_volume_client path
-  command: "{{ ceph_python_interp }} -c 'import ceph_volume_client; print ceph_volume_client.__file__'"
+  command: "{{ ceph_python_interp }} -c 'import ceph_volume_client; print(ceph_volume_client.__file__)'"
   changed_when: false
   failed_when: false
   register: ceph_volume_client_module_path
 
 - name: Register ceph_argparse path
-  command: "{{ ceph_python_interp }} -c 'import ceph_argparse; print ceph_argparse.__file__'"
+  command: "{{ ceph_python_interp }} -c 'import ceph_argparse; print(ceph_argparse.__file__)'"
   changed_when: false
   failed_when: false
   register: ceph_argparse_module_path
