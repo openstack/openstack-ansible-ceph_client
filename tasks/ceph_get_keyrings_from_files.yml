@@ -18,15 +18,16 @@
 - name: From files | Retrieve keyrings for openstack clients
   set_fact:
     ceph_client_keys: |-
-      {% set _keys = [] %}
+      {% set _keys = {} %}
       {% for client in ceph_client_filtered_clients %}
       {%   set _ = _keys.update({
-              client: lookup('file', ceph_keyrings_dir ~ '/' ~ item ~ '.keyring')
+              client: lookup('file', ceph_keyrings_dir ~ '/' ~ client ~ '.keyring')
           })
       %}
       {% endfor %}
       {{ _keys }}
   changed_when: false
+  delegate_facts: True
   delegate_to: localhost
   tags:
     - ceph-config
