@@ -33,7 +33,7 @@ ceph_components:
       - '{{ cinder_backup_ceph_client }}'
     service: '{{ ceph_cinder_service_names }}'
   - component: nova_compute
-    package: "{{ [ libvirt_package, 'ceph-common' ] + python_ceph_packages  }}"
+    package: "{{ libvirt_packages + [ 'ceph-common' ] + python_ceph_packages  }}"
     client:
       - '{{ nova_ceph_client }}'
     service: '{{ ceph_nova_service_names }}'

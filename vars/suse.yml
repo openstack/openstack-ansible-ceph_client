@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-libvirt_package: qemu-kvm
+libvirt_packages:
+  - qemu-kvm
+
 libvirt_service_name: libvirtd
 
 python_ceph_packages:
