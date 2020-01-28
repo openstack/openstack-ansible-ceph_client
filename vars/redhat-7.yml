@@ -23,7 +23,10 @@ epel_gpg_keys:
   # Extra Packages for Enterprise Linux 7
   - key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
 
-libvirt_package: libvirt-daemon-kvm
+libvirt_packages:
+  - libvirt-daemon-kvm
+  - libvirt-client
+
 libvirt_service_name: libvirtd
 
 python_ceph_packages:
