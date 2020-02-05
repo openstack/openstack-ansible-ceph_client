@@ -49,5 +49,5 @@ python_ceph_packages:
 # Apt repositories
 ceph_apt_repos:
     ceph:
-        repo: "deb {{ ceph_apt_repo_url }} {{ ansible_lsb.codename }} main"
+        repo: "deb {{ ceph_apt_repo_url }} {{ ansible_distribution_release }} main"
         state: "present"
