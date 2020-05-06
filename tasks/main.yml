@@ -54,6 +54,7 @@
     - ceph-install
 
 - include_tasks: ceph_get_mon_host.yml
+  when: ceph_conf_file is not defined or ceph_keyrings_dir is not defined
   tags:
     - ceph-config
 
