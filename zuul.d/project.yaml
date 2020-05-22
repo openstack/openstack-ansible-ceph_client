@@ -17,5 +17,6 @@
     templates:
       - openstack-ansible-role-jobs
       - check-requirements
+      - openstack-ansible-deploy-ceph-jobs
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
