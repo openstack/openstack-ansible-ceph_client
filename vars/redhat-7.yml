@@ -30,10 +30,10 @@ libvirt_packages:
 libvirt_service_name: libvirtd
 
 python_ceph_packages:
-  - python-ceph
-  - python36-cephfs
-  - python36-rados
-  - python36-rbd
+  - python3-ceph
+  - python3-cephfs
+  - python3-rados
+  - python3-rbd
 
 ceph_repo_url_region: "download" # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
 ceph_yum_repo_url: "https://{{ ceph_repo_url_region }}.ceph.com/rpm-{{ ceph_stable_release }}/el7"

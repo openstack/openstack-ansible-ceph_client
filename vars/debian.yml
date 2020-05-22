@@ -41,7 +41,7 @@ libvirt_packages:
 libvirt_service_name: libvirtd
 
 python_ceph_packages:
-  - python-ceph
+  - python3-ceph
   - python3-cephfs
   - python3-rados
   - python3-rbd
