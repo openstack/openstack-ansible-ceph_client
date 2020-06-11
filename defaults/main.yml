@@ -39,7 +39,7 @@ ceph_client_package_state: "latest"
 #            unlike the other options does not attempt to manage package keys or add additional
 #            package repositories.
 ceph_pkg_source: ceph
-ceph_stable_release: luminous
+ceph_stable_release: mimic
 ceph_apt_pinned_packages: [{ package: "*", release: "ceph.com",  priority: 1001 }]
 
 # Ceph Authentication
