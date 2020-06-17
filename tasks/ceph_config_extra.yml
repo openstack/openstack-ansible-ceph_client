@@ -22,8 +22,6 @@
   when:
     - item.mon_host is defined
     - item.src is defined
-  vars:
-    ansible_python_interpreter: "/usr/bin/python"
 
 - name: Create extra ceph.conf files
   copy:
