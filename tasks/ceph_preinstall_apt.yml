@@ -41,6 +41,12 @@
   when:
     - ceph_pkg_source == 'ceph'
 
+- name: Remove ceph repo(s) with trailing slash
+  apt_repository:
+    repo: "deb {{ ceph_apt_repo_url }}/ {{ ansible_distribution_release }} main"
+    state: "absent"
+    filename: "{{ ceph_apt_repos[ceph_pkg_source].filename | default(omit) }}"
+
 # When updating the cache in the apt_repository
 # task, and the update fails, a retry does not
 # detect a change the second attempt and therefore
