@@ -32,7 +32,7 @@ ceph_revoked_gpg_keys:
 
 # Ceph.com repository variables
 ceph_apt_repo_url_region: "download"  # or "eu" for Netherlands based mirror
-ceph_apt_repo_url: "http://{{ ceph_apt_repo_url_region }}.ceph.com/debian-{{ ceph_stable_release }}/"
+ceph_apt_repo_url: "http://{{ ceph_apt_repo_url_region }}.ceph.com/debian-{{ ceph_stable_release }}"
 
 # LibVirt differentials between Debian and Ubuntu
 libvirt_packages:
@@ -47,6 +47,6 @@ python_ceph_packages:
 
 # Apt repositories
 ceph_apt_repos:
-    ceph:
-        repo: "deb {{ ceph_apt_repo_url }} {{ ansible_lsb.codename }} main"
-        state: "present"
+  ceph:
+    repo: "deb {{ ceph_apt_repo_url }} {{ ansible_lsb.codename }} main"
+    state: "present"
