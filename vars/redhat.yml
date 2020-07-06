@@ -20,8 +20,8 @@ ceph_gpg_keys:
 
 # EPEL GPG Keys
 epel_gpg_keys:
-  # Extra Packages for Enterprise Linux 7
-  - key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+  # Extra Packages for Enterprise Linux
+  - key: "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
 
 libvirt_packages:
   - libvirt-daemon-kvm
@@ -35,6 +35,6 @@ python_ceph_packages:
   - python3-rbd
 
 ceph_repo_url_region: "download" # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
-ceph_yum_repo_url: "https://{{ ceph_repo_url_region }}.ceph.com/rpm-{{ ceph_stable_release }}/el7"
+ceph_yum_repo_url: "https://{{ ceph_repo_url_region }}.ceph.com/rpm-{{ ceph_stable_release }}/el{{ ansible_distribution_major_version }}"
 
 # TODO mgariepy: add CentOS SIG ceph repo.
