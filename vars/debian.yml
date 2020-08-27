@@ -51,6 +51,3 @@ ceph_apt_repos:
   ceph:
     repo: "deb {{ ceph_apt_repo_url }} {{ ansible_distribution_release }} main"
     state: "present"
-  remove_trailing_slash:
-    repo: "deb {{ ceph_apt_repo_url }}/ {{ ansible_distribution_release }} main"
-    state: "absent"
