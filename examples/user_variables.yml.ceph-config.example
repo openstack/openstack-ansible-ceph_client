@@ -6,13 +6,6 @@
 # Directory containing the Ceph keyring files with access credentials.
 ceph_keyrings_dir: /etc/openstack_deploy/ceph-keyrings
 
-# List addresses of ceph mons, so they are not used as IPs for containers on
-# the storage network.
-ceph_mons:
-   - 172.29.244.18
-   - 172.29.244.19
-   - 172.29.244.20
-
 # General Ceph configuration file containing the information for Ceph clients
 # to connect to the Ceph cluster.
 ceph_conf_file: |

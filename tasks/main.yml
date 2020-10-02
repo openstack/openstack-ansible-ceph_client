@@ -16,7 +16,7 @@
 - name: End playbook if disabled
   meta: end_play
   when:
-    - ceph_mons | list | length == 0
+    - ceph_mons | list | length == 0 and ceph_conf_file is not defined
   tags:
     - always
 
