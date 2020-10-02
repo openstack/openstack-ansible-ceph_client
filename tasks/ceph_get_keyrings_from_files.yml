@@ -36,7 +36,7 @@
 - name: From files | Provision ceph client keyrings
   copy:
     dest: "/etc/ceph/ceph.client.{{ item }}.keyring"
-    content: "{{ hostvars['localhost']['ceph_client_keys'][item] }}\n"
+    content: "{{ hostvars['localhost']['ceph_client_keys'][item] }}\n" # noqa 206
     group:    "{{ cephkeys_access_group }}"
     # ideally the permission will be: 0600 and the owner/group will be either
     # glance , nova or cinder. For keys that require access by different users
@@ -50,7 +50,7 @@
     - Restart os services
 
 - name: From file | Retrieve nova secret
-  command : echo "{{ hostvars['localhost']['ceph_client_keys'][nova_ceph_client] | regex_replace('^.*\n.*= (.*)', '\1')}}"
+  command : echo "{{ hostvars['localhost']['ceph_client_keys'][nova_ceph_client] | regex_replace('^.*\n.*= (.*)', '\1') }}" # noqa 206
   register: ceph_nova_secret
   when:
     - inventory_hostname in groups.nova_compute

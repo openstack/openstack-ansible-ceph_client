@@ -49,7 +49,7 @@
 
 - include_tasks: ceph_install_python_libs.yml
   when:
-    - openstack_service_venv_bin != ''
+    - openstack_service_venv_bin | length > 0
   tags:
     - ceph-install
 

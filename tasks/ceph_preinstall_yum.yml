@@ -76,7 +76,7 @@
     name: ceph
     description: "Ceph packages for $basearch"
     file: ceph
-    baseurl: "{{ceph_yum_repo_url}}/$basearch"
+    baseurl: "{{ ceph_yum_repo_url }}/$basearch"
     gpgcheck: yes
     enabled: yes
     priority: 50
@@ -87,7 +87,7 @@
     name: ceph-noarch
     description: "Ceph noarch packages"
     file: ceph
-    baseurl: "{{ceph_yum_repo_url}}/noarch"
+    baseurl: "{{ ceph_yum_repo_url }}/noarch"
     gpgcheck: yes
     enabled: yes
     priority: 50
