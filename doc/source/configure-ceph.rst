@@ -74,6 +74,10 @@ The example uses ``cephx`` authentication, and requires existing ``glance`` and
 
 .. _Deploying SSH Keys: https://docs.openstack.org/project-deploy-guide/openstack-ansible/draft/targethosts-prepare.html#deploying-secure-shell-ssh-keys
 
+For a complete example how to provide the necessary configuration for a Ceph
+backend without necessary access to Ceph monitors via SSH please see
+:ref:`configuration-from-files`.
+
 Extra client configuration files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Deployers can specify extra Ceph configuration files to support

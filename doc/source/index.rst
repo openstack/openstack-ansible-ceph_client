@@ -6,6 +6,7 @@ OpenStack-Ansible Ceph client
    :maxdepth: 2
 
    configure-ceph.rst
+   config-from-file.rst
 
 This Ansible role installs the Ceph operating system
 packages used to interact with a Ceph cluster.
