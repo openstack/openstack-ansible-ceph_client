@@ -19,4 +19,4 @@
       - check-requirements
       - openstack-ansible-deploy-ceph-jobs
       - publish-openstack-docs-pti
-      - release-notes-jobs-python3
+      - build-release-notes-jobs-python3
