@@ -44,4 +44,4 @@ dependencies:
   apt_pinned_packages: "{{ ceph_apt_pinned_packages }}"
   apt_package_pinning_file_name: "ceph_client_pin.pref"
   when:
-    - ansible_pkg_mgr == 'apt'
+    - ansible_facts['pkg_mgr'] == 'apt'

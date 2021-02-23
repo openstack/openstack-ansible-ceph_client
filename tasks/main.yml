@@ -23,11 +23,11 @@
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
-    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
-    - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
-    - "{{ ansible_distribution | lower }}.yml"
-    - "{{ ansible_os_family | lower }}.yml"
+    - "{{ ansible_facts['distribution'] | lower }}-{{ ansible_dfacts['istribution_version'] | lower }}.yml"
+    - "{{ ansible_facts['distribution'] | lower }}-{{ ansible_facts['distribution_major_version'] | lower }}.yml"
+    - "{{ ansible_facts['os_family'] | lower }}-{{ ansible_facts['distribution_major_version'] | lower }}.yml"
+    - "{{ ansible_facts['distribution'] | lower }}.yml"
+    - "{{ ansible_facts['os_family'] | lower }}.yml"
   tags:
     - always
 
@@ -37,7 +37,7 @@
   when:
     - ceph_pkg_source not in ['ceph', 'distro']
 
-- include_tasks: "ceph_preinstall_{{ ansible_pkg_mgr }}.yml"
+- include_tasks: "ceph_preinstall_{{ ansible_facts['pkg_mgr'] }}.yml"
   when:
     - ceph_pkg_source != 'distro'
   tags:

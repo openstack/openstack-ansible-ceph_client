@@ -19,10 +19,10 @@ libvirt_packages:
 libvirt_service_name: libvirtd
 
 python_ceph_packages:
-  - "{{ (ansible_distribution_version is version ('42', '>=')) | ternary('python-cephfs', 'python3-cephfs') }}"
-  - "{{ (ansible_distribution_version is version ('42', '>=')) | ternary('python-rados', 'python3-rados') }}"
-  - "{{ (ansible_distribution_version is version ('42', '>=')) | ternary('python-rbd', 'python3-rbd') }}"
-  - "{{ (ansible_distribution_version is version ('42', '>=')) | ternary('python-rgw', 'python3-rgw') }}"
+  - "{{ (ansible_facts['distribution_version'] is version ('42', '>=')) | ternary('python-cephfs', 'python3-cephfs') }}"
+  - "{{ (ansible_facts['distribution_version'] is version ('42', '>=')) | ternary('python-rados', 'python3-rados') }}"
+  - "{{ (ansible_facts['distribution_version'] is version ('42', '>=')) | ternary('python-rbd', 'python3-rbd') }}"
+  - "{{ (ansible_facts['distribution_version'] is version ('42', '>=')) | ternary('python-rgw', 'python3-rgw') }}"
 
 # NOTE(hwoarang) Upstream does not provide openSUSE packages
 # so we always set ceph_pkg_source to 'distro' for openSUSE

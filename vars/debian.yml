@@ -36,7 +36,7 @@ ceph_apt_repo_url: "http://{{ ceph_apt_repo_url_region }}.ceph.com/debian-{{ cep
 
 # LibVirt differentials between Debian and Ubuntu
 libvirt_packages:
-  - "{{ (ansible_distribution == 'Ubuntu' and ansible_distribution_major_version is version('20', '<')) | ternary('libvirt-bin', 'libvirt-daemon-system') }}"
+  - "{{ (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version'] is version('20', '<')) | ternary('libvirt-bin', 'libvirt-daemon-system') }}"
 
 libvirt_service_name: libvirtd
 
@@ -49,5 +49,5 @@ python_ceph_packages:
 # Apt repositories
 ceph_apt_repos:
   ceph:
-    repo: "deb {{ ceph_apt_repo_url }} {{ ansible_distribution_release }} main"
+    repo: "deb {{ ceph_apt_repo_url }} {{ ansible_facts['distribution_release'] }} main"
     state: "present"
