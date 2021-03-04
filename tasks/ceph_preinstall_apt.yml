@@ -19,6 +19,8 @@
     state: "absent"
   register: revoke_keys
   with_items: "{{ ceph_revoked_gpg_keys }}"
+  retries: 5
+  delay: 2
   when:
     - ceph_pkg_source == 'ceph'
 
