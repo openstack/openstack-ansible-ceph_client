@@ -22,17 +22,15 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - stretch
+        - buster
     - name: Ubuntu
       versions:
-        - xenial
         - bionic
+        - focal
     - name: EL
       versions:
-        - 7
-    - name: opensuse
-      versions:
-        - all
+        - 8
+
   categories:
     - cloud
     - ceph
