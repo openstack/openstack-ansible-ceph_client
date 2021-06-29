@@ -14,11 +14,12 @@
 # limitations under the License.
 
 galaxy_info:
-  author: openstack
+  author: OpenStack Foundation
   description: Installation and configuration of the ceph client
   company: OpenStack Foundation
   license: Apache2
   min_ansible_version: 2.2
+  role_name: ceph_client
   platforms:
     - name: Debian
       versions:
