@@ -43,7 +43,7 @@
     - ceph_conf_file is defined
 
 - name: Create ceph.conf from mon host
-  config_template:
+  openstack.config_template.config_template:
     content: '{{ ceph_conf }}'
     dest: /etc/ceph/ceph.conf
     owner:  root
