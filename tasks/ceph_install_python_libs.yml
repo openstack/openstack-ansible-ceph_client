@@ -24,7 +24,7 @@
 - name: Set python venvs details
   set_fact:
     venv_python_lib_folder: "{{ python_venv_details.files[0].path }}"
-    ceph_python_interp: "/usr/bin/{{ ((python_venv_details.files[0].path | basename)[:-2] == 'python3') | ternary('python3', 'python2') }}"
+    ceph_python_interp: "/usr/bin/python3"
 
 - name: Register rados module path
   command: "{{ ceph_python_interp }} -c 'import rados; print(rados.__file__)'"
