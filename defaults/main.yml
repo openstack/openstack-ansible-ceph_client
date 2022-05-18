@@ -85,8 +85,8 @@ gnocchi_ceph_client: gnocchi
 nova_ceph_client: '{{ cinder_ceph_client }}'
 
 # overruled in user_secrets:
-# TODO(odyssey4me) - the uuid should be removed, there should be no defaults for secrets
-nova_ceph_client_uuid: 457eb676-33da-42ec-9a8c-9293d545c337
+# nova_ceph_client_uuid:
+
 cephkeys_access_group: ceph
 
 openstack_service_system_user: null
