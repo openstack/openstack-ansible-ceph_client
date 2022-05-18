@@ -31,18 +31,6 @@
     - ceph-config
     - always
 
-- name: Create cephkeys_access_group group
-  group:
-    name: "{{ cephkeys_access_group }}"
-
-- name: Add OpenStack service to cephkeys_access_group group
-  user:
-    name: "{{ openstack_service_system_user }}"
-    groups: "{{ cephkeys_access_group }}"
-    append: yes
-  notify:
-    - Restart os services
-
 - name: Provision ceph client keyrings
   # TODO: do we really need a template for this? what's the added value compare to
   # ceph get-or-create ... ... -o file?
