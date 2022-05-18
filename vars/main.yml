@@ -70,7 +70,7 @@ ceph_client_filtered_packages: |-
 ceph_client_filtered_services: |-
  {% set services = [] %}
  {% for comp in (ceph_components + ceph_extra_components) %}
- {%   if comp.component in group_names %}
+ {%   if comp.component in group_names and 'service' in comp %}
  {%     set _ = services.append(comp.service) %}
  {%   endif %}
  {% endfor %}
