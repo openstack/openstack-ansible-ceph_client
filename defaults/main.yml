@@ -49,6 +49,10 @@ cephx: true
 # A list of the IP addresses for your Ceph monitors
 ceph_mons: []
 
+# Name of ceph cluster that we interact with.
+# It would affect config file name and commands issued to the cluster.
+ceph_cluster_name: ceph
+
 # Path to local ceph.conf file
 # Leave this commented to obtain a ceph.conf from one of the monitors defined in ceph_mons
 #ceph_conf_file: |

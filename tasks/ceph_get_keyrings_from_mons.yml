@@ -20,7 +20,7 @@
   # the first get makes sure the client exists, so the second only runs when it
   # exists, the trick is the different output of both, the second has the right
   # output to put in a keyring; ceph admin should have already created the user
-  shell: ceph auth get client.{{ item }} >/dev/null && ceph auth get-or-create client.{{ item }}
+  shell: "ceph auth get client.{{ item }} --cluster {{ ceph_cluster_name }} >/dev/null && ceph auth get-or-create client.{{ item }} --cluster {{ ceph_cluster_name }}"
   with_items: "{{ ceph_client_filtered_clients }}"
   changed_when: false
   delegate_to: '{{ ceph_mon_host }}'
@@ -36,7 +36,7 @@
   # ceph get-or-create ... ... -o file?
   template:
     src:      ceph.client.keyring.j2
-    dest:     /etc/ceph/ceph.client.{{ item.item }}.keyring
+    dest:     "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.item }}.keyring"
     backup:   true
     owner:    root
     # TODO
@@ -56,7 +56,7 @@
 
 ## Ceph nova client libvirt secret
 - name: Retrieve nova secret from cephcluster
-  command: ceph auth get-key client.{{ nova_ceph_client }}
+  command: ceph auth get-key client.{{ nova_ceph_client }} --cluster {{ ceph_cluster_name }}
   when:
     - inventory_hostname in groups.nova_compute
   changed_when: false

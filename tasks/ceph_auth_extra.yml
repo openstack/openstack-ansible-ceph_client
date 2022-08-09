@@ -15,7 +15,7 @@
 
 
 - name: Create keyring files for openstack clients from extra cluster(s)
-  shell: ceph auth get client.{{ item.client_name }} >/dev/null && ceph auth get-or-create client.{{ item.client_name }} > /etc/ceph/ceph.client.{{ item.client_name }}.keyring.tmp
+  shell: "ceph auth get client.{{ item.client_name }} --cluster {{ ceph_cluster_name }} >/dev/null && ceph auth get-or-create client.{{ item.client_name }} --cluster {{ ceph_cluster_name }} > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp"
   with_items: "{{ ceph_extra_confs }}"
   delegate_to: "{{ item.mon_host }}"
   when:
@@ -23,7 +23,7 @@
     - item.mon_host is defined
 
 - name: Get extra keyring files
-  command: "scp {{ item.mon_host }}:/etc/ceph/ceph.client.{{ item.client_name }}.keyring.tmp {{ item.keyring_src }}"
+  command: "scp {{ item.mon_host }}:/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp {{ item.keyring_src }}"
   changed_when: false
   delegate_to: localhost
   with_items: "{{ ceph_extra_confs }}"
@@ -44,7 +44,7 @@
 
 - name: Remove temp extra keyring files
   file:
-    path: "/etc/ceph/ceph.client.{{ item.client_name }}.keyring.tmp"
+    path: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp"
     state: absent
   delegate_to: "{{ item.mon_host }}"
   with_items: "{{ ceph_extra_confs }}"
