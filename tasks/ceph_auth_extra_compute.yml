@@ -132,6 +132,8 @@
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
+  when:
+    - item.secret_uuid is defined
   tags:
     - always
 
@@ -140,6 +142,8 @@
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
+  when:
+    - item.secret_uuid is defined
   tags:
     - always
 
