@@ -86,12 +86,14 @@
 - name: Define libvirt nova extra secret(s)
   command: "virsh secret-define --file /tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml"
   changed_when: false
-  with_items: "{{ ceph_extra_confs }}"
+  loop: "{{ ceph_extra_confs }}"
+  loop_control:
+    index_var: index
   when:
-    - item.client_name is defined
-    - item.mon_host is defined
-    - item.secret_uuid is defined
-    - item.secret_uuid not in libvirt_secret_exists.results[0].stdout_lines
+    - "'client_name' in item"
+    - "'mon_host' in item"
+    - "'secret_uuid' in item"
+    - item.secret_uuid not in libvirt_secret_exists.results[index].stdout_lines
   notify:
     - Restart os services
 
@@ -117,12 +119,14 @@
 
 - name: Set extra secret value(s) in libvirt
   shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(cat /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp)"
-  with_items: "{{ ceph_extra_confs }}"
+  loop: "{{ ceph_extra_confs }}"
+  loop_control:
+    index_var: index
   when:
-    - item.client_name is defined
-    - item.mon_host is defined
-    - item.secret_uuid is defined
-    - item.secret_uuid  not in  libvirt_secret_value_exists.results[0].stdout_lines
+    - "'client_name' in item"
+    - "'mon_host' in item"
+    - "'secret_uuid' in item"
+    - item.secret_uuid  not in  libvirt_secret_value_exists.results[index].stdout_lines
   notify:
     - Restart os services
 
