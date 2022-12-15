@@ -31,7 +31,7 @@
     - item.mon_host is defined
     - item.client_name is defined
 
-- name: Distribute extra key files
+- name: Distribute extra key files from monitor host
   copy:
     src: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     dest: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
@@ -39,6 +39,16 @@
   when:
     - item.mon_host is defined
     - item.client_name is defined
+
+- name: Create extra key files from keyring files
+  copy:
+    src: "{{ item.keyring_src }}"
+    dest: "/tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp"
+  with_items: "{{ ceph_extra_confs }}"
+  when:
+    - item.keyring_src is defined
+    - item.client_name is defined
+    - item.secret_uuid is defined
 
 - name: Remove temp extra key files
   file:
@@ -54,12 +64,11 @@
 - name: Provide extra xml files to create the secrets
   template:
     src: secret.xml.j2
-    dest: /tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml
+    dest: /tmp/{{ item.secret_uuid }}{{ item.client_name }}-secret.xml
     mode: "0600"
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.client_name is defined
-    - item.mon_host is defined
     - item.secret_uuid is defined
 
 - name: Check if extra secret(s) are defined in libvirt pt1
@@ -84,14 +93,13 @@
     - always
 
 - name: Define libvirt nova extra secret(s)
-  command: "virsh secret-define --file /tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml"
+  command: "virsh secret-define --file /tmp/{{ item.secret_uuid }}{{ item.client_name }}-secret.xml"
   changed_when: false
   loop: "{{ ceph_extra_confs }}"
   loop_control:
     index_var: index
   when:
     - "'client_name' in item"
-    - "'mon_host' in item"
     - "'secret_uuid' in item"
     - item.secret_uuid not in libvirt_secret_exists.results[index].stdout_lines
   notify:
@@ -117,7 +125,7 @@
   tags:
     - always
 
-- name: Set extra secret value(s) in libvirt
+- name: Set extra secret value(s) in libvirt from monitor host
   shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(cat /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp)"
   loop: "{{ ceph_extra_confs }}"
   loop_control:
@@ -125,6 +133,19 @@
   when:
     - "'client_name' in item"
     - "'mon_host' in item"
+    - "'secret_uuid' in item"
+    - item.secret_uuid  not in  libvirt_secret_value_exists.results[index].stdout_lines
+  notify:
+    - Restart os services
+
+- name: Set extra secret value(s) in libvirt from keyring
+  shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(awk '/key = /{print $3}' /tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp)"
+  loop: "{{ ceph_extra_confs }}"
+  loop_control:
+    index_var: index
+  when:
+    - "'client_name' in item"
+    - "'keyring_src' in item"
     - "'secret_uuid' in item"
     - item.secret_uuid  not in  libvirt_secret_value_exists.results[index].stdout_lines
   notify:
@@ -149,7 +170,18 @@
 
 - name: Remove libvirt nova secret file
   file:
-    path: "/tmp/{{ item.mon_host }}{{ item.client_name }}-secret.xml"
+    path: "/tmp/{{ item.secret_uuid }}{{ item.client_name }}-secret.xml"
+    state: "absent"
+  with_items: "{{ ceph_extra_confs }}"
+  when:
+    - item.secret_uuid is defined
+    - item.client_name is defined
+  tags:
+    - always
+
+- name: Remove libvirt key file from monitor host
+  file:
+    path: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
   when:
@@ -158,13 +190,13 @@
   tags:
     - always
 
-- name: Remove libvirt key file
+- name: Remove libvirt key file from keyring
   file:
-    path: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
+    path: "/tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
   when:
-    - item.mon_host is defined
+    - item.secret_uuid is defined
     - item.client_name is defined
   tags:
     - always
