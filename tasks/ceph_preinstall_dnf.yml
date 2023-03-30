@@ -13,33 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Copy EPEL gpg keyfile to the key location
-  copy:
-    src: "gpg/{{ item.key | basename }}"
-    dest: "{{ item.key }}"
-    mode: '0644'
-  with_items: "{{ epel_gpg_keys }}"
-  when:
-    - ansible_facts['pkg_mgr'] == 'dnf'
-
-- name: Install EPEL gpg keys
-  rpm_key: "{{ key }}"
-  with_items: "{{ epel_gpg_keys }}"
-  loop_control:
-    loop_var: key
-  when:
-    - ansible_facts['pkg_mgr'] == 'dnf'
-  register: _add_epel_keys
-  until: _add_epel_keys is success
+- name: Download EPEL gpg keys
+  get_url:
+     url: "{{ ceph_centos_epel_key }}"
+     dest: /etc/pki/rpm-gpg
+  register: _get_yum_keys
+  until: _get_yum_keys is success
   retries: 5
   delay: 2
+
+- name: Install EPEL gpg keys
+  rpm_key:
+    key: "/etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
+    state: present
 
 - name: Install the EPEL repository
   yum_repository:
     name: ceph-client-deps
-    baseurl: "{{ (centos_epel_mirror | default ('http://download.fedoraproject.org/pub/epel')) ~ '/' ~ ansible_facts['distribution_major_version'] ~ '/Everything/' ~ ansible_facts['architecture'] }}"
+    baseurl: "{{ ceph_centos_epel_mirror ~ '/' ~ ansible_facts['distribution_major_version'] ~ '/Everything/' ~ ansible_facts['architecture'] }}"
     description: "Extra Packages for Enterprise Linux {{ ansible_facts['distribution_major_version'] }} - $basearch"
     gpgcheck: yes
+    gpgkey: "file:///etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
     enabled: yes
     state: present
     includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath, fmt'

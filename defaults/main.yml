@@ -121,3 +121,7 @@ ceph_extra_config_groups:
 ceph_extra_compute_group: nova_compute
 
 ceph_client_ceph_conf_overrides: "{{ ceph_conf_overrides | default({}) }}"
+
+# CentOS repos
+ceph_centos_epel_mirror: "{{ centos_epel_mirror | default('http://download.fedoraproject.org/pub/epel') }}"
+ceph_centos_epel_key: "{{ centos_epel_key | default('http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-' ~ ansible_facts['distribution_major_version']) }}"
