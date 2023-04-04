@@ -42,7 +42,7 @@
     gpgcheck: yes
     enabled: yes
     state: present
-    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath, fmt'
+    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath, fmt, thrift'
   when:
     - ansible_facts['pkg_mgr'] == 'dnf'
   register: install_epel_repo
