@@ -18,11 +18,6 @@ ceph_gpg_keys:
   # download.ceph.com/keys/release.asc
   - key: /etc/pki/rpm-gpg/ceph_com_keys_release
 
-# EPEL GPG Keys
-epel_gpg_keys:
-  # Extra Packages for Enterprise Linux
-  - key: "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_facts['distribution_major_version'] }}"
-
 libvirt_packages:
   - libvirt-daemon-kvm
   - libvirt-client
