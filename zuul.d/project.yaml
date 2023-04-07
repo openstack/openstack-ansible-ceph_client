@@ -16,7 +16,6 @@
 - project:
     templates:
       - openstack-ansible-linters-jobs
-      - openstack-ansible-role-jobs
       - check-requirements
       - openstack-ansible-deploy-ceph-jobs
       - publish-openstack-docs-pti
