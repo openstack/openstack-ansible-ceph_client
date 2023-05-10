@@ -34,9 +34,8 @@ ceph_revoked_gpg_keys:
 ceph_apt_repo_url_region: "download"  # or "eu" for Netherlands based mirror
 ceph_apt_repo_url: "http://{{ ceph_apt_repo_url_region }}.ceph.com/debian-{{ ceph_stable_release }}"
 
-# LibVirt differentials between Debian and Ubuntu
 libvirt_packages:
-  - "{{ (ansible_facts['distribution'] == 'Ubuntu' and ansible_facts['distribution_major_version'] is version('20', '<')) | ternary('libvirt-bin', 'libvirt-daemon-system') }}"
+  - libvirt-daemon-system
 
 libvirt_service_name: libvirtd
 
