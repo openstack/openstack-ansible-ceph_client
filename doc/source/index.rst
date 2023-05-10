@@ -8,6 +8,7 @@ OpenStack-Ansible Ceph client
    configure-ceph.rst
    config-from-file.rst
    config-immutable-object-cache.rst
+   config-persistent-write-log-cache.rst
 
 This Ansible role installs the Ceph operating system
 packages used to interact with a Ceph cluster.

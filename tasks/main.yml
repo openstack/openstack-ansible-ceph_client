@@ -77,3 +77,13 @@
     - ceph_immutable_object_cache_enabled | bool
   tags:
     - ceph-config
+
+- name: Set permissions on persistent write log cache directory
+  file:
+    path: "{{ ceph_persistent_write_log_cache_dir }}"
+    owner: "{{ ceph_persistent_write_log_cache_owner }}"
+    group: "{{ ceph_persistent_write_log_cache_group }}"
+    mode: "{{ ceph_persistent_write_log_cache_mode }}"
+  when: ceph_persistent_write_log_cache_enabled | bool
+  tags:
+    - ceph-config

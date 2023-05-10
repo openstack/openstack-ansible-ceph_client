@@ -137,3 +137,9 @@ ceph_immutable_object_cache_group: "libvirt-qemu"
 ceph_immutable_object_cache_mode: "0755"
 ceph_immutable_object_cache_key_owner: "{{ ceph_immutable_object_cache_owner }}"
 ceph_immutable_object_cache_key_group: "{{ ceph_immutable_object_cache_group }}"
+
+ceph_persistent_write_log_cache_enabled: False
+ceph_persistent_write_log_cache_dir: "/rbd-write-log-cache"
+ceph_persistent_write_log_cache_owner: "libvirt-qemu"
+ceph_persistent_write_log_cache_group: "ceph"
+ceph_persistent_write_log_cache_mode: "0755"
