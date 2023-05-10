@@ -20,27 +20,27 @@ ceph_components:
   - component: glance_api
     package: "{{ python_ceph_packages }}"
     client:
-      - '{{ glance_ceph_client }}'
+      - name: '{{ glance_ceph_client }}'
     service: '{{ ceph_glance_service_names }}'
   - component: cinder_volume
     package: "{{ [ 'ceph-common' ] + python_ceph_packages }}"
     client:
-      - '{{ cinder_ceph_client }}'
+      - name: '{{ cinder_ceph_client }}'
     service: '{{ ceph_cinder_service_names }}'
   - component: cinder_backup
     package: "{{ [ 'ceph-common' ] + python_ceph_packages }}"
     client:
-      - '{{ cinder_backup_ceph_client }}'
+      - name: '{{ cinder_backup_ceph_client }}'
     service: '{{ ceph_cinder_service_names }}'
   - component: nova_compute
     package: "{{ libvirt_packages + [ 'ceph-common' ] + python_ceph_packages  }}"
     client:
-      - '{{ nova_ceph_client }}'
+      - name: "{{ nova_ceph_client }}"
     service: '{{ ceph_nova_service_names }}'
   - component: manila_share
     package: "{{ ['ceph-common'] + python_ceph_packages  }}"
     client:
-      - "{{ manila_ceph_client }}"
+      - name: "{{ manila_ceph_client }}"
     service: "{{ ceph_manila_service_names }}"
 
 ceph_extra_components: []

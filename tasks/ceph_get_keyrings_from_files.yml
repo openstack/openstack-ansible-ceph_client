@@ -21,7 +21,7 @@
       {% set _keys = {} %}
       {% for client in ceph_client_filtered_clients %}
       {%   set _ = _keys.update({
-              client: lookup('file', ceph_keyrings_dir ~ '/' ~ client ~ '.keyring')
+              client: lookup('file', ceph_keyrings_dir ~ '/' ~ client['name'] ~ '.keyring')
           })
       %}
       {% endfor %}
@@ -35,16 +35,17 @@
 
 - name: From files | Provision ceph client keyrings
   copy:
-    dest: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item }}.keyring"
-    content: "{{ ceph_client_keys[item] }}\n" # noqa 206
-    group:    "{{ cephkeys_access_group }}"
+    dest: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item['name'] }}.keyring"
+    content: "{{ ceph_client_keys[item['name']] }}\n" # noqa 206
+    owner:    "{{ client['owner'] | default('root') }}"
+    group:    "{{ client['group'] | default(cephkeys_access_group) }}"
     # ideally the permission will be: 0600 and the owner/group will be either
     # glance , nova or cinder. For keys that require access by different users
     # (the cinder one) we should probably create a group 'cephkeys' and add
     # nova/cinder to it.
     # If I'm correct, the use case for multiple users is on the computre nodes,
     # access needed by users libvirt-qemu and nova
-    mode:     0640
+    mode:     "{{ client['mode'] | default ('0640') }}"
   with_items: "{{ ceph_client_filtered_clients }}"
   notify:
     - Restart os services

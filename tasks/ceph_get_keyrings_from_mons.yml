@@ -20,7 +20,7 @@
   # the first get makes sure the client exists, so the second only runs when it
   # exists, the trick is the different output of both, the second has the right
   # output to put in a keyring; ceph admin should have already created the user
-  shell: "ceph auth get client.{{ item }} --cluster {{ ceph_cluster_name }} >/dev/null && ceph auth get-or-create client.{{ item }} --cluster {{ ceph_cluster_name }}"
+  shell: "ceph auth get client.{{ item['name'] }} --cluster {{ ceph_cluster_name }} >/dev/null && ceph auth get-or-create client.{{ item['name'] }} --cluster {{ ceph_cluster_name }}"
   with_items: "{{ ceph_client_filtered_clients }}"
   changed_when: false
   delegate_to: '{{ ceph_mon_host }}'
@@ -36,18 +36,18 @@
   # ceph get-or-create ... ... -o file?
   template:
     src:      ceph.client.keyring.j2
-    dest:     "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.item }}.keyring"
+    dest:     "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.item['name'] }}.keyring"
     backup:   true
-    owner:    root
+    owner:    "{{ item.item.owner | default('root') }}"
     # TODO
-    group:    "{{ cephkeys_access_group }}"
+    group:    "{{ item.item.group | default(cephkeys_access_group) }}"
     # ideally the permission will be: 0600 and the owner/group will be either
     # glance , nova or cinder. For keys that require access by different users
     # (the cinder one) we should probably create a group 'cephkeys' and add
     # nova/cinder to it.
     # If I'm correct, the use case for multiple users is on the computre nodes,
     # access needed by users libvirt-qemu and nova
-    mode:     0640
+    mode:     "{{ item.item.mode | default('0640') }}"
   with_items: "{{ ceph_client_keyrings.results }}"
   when:
     - not item is skipped
