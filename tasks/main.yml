@@ -71,3 +71,9 @@
     - cephx | bool
   tags:
     - ceph-config
+
+- include_tasks: ceph_immutable_object_cache.yml
+  when:
+    - ceph_immutable_object_cache_enabled | bool
+  tags:
+    - ceph-config

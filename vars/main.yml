@@ -33,15 +33,23 @@ ceph_components:
       - name: '{{ cinder_backup_ceph_client }}'
     service: '{{ ceph_cinder_service_names }}'
   - component: nova_compute
-    package: "{{ libvirt_packages + [ 'ceph-common' ] + python_ceph_packages  }}"
+    package: "{{ (libvirt_packages + [ 'ceph-common' ] + ceph_immutable_object_cache_packages + python_ceph_packages) | select }}"
     client:
       - name: "{{ nova_ceph_client }}"
+      - name: "{{ immutable_object_cache_client }}"
+        owner: "{{ ceph_immutable_object_cache_key_owner }}"
+        group: "{{ ceph_immutable_object_cache_key_group }}"
+        enabled: "{{ ceph_immutable_object_cache_enabled }}"
     service: '{{ ceph_nova_service_names }}'
   - component: manila_share
     package: "{{ ['ceph-common'] + python_ceph_packages  }}"
     client:
       - name: "{{ manila_ceph_client }}"
     service: "{{ ceph_manila_service_names }}"
+
+# cache daemon package name is the same on ubuntu/centos
+ceph_immutable_object_cache_packages:
+  - "{{ ceph_immutable_object_cache_enabled | ternary('ceph-immutable-object-cache', '') }}"
 
 ceph_extra_components: []
 # Gnocchi has been moved out from the integrated OSA repo, but can still

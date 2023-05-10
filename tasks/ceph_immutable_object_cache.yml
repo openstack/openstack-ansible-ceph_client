@@ -1,0 +1,44 @@
+# Copyright 2023, BBC R&D
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Set permissions on immutable object cache directory
+  file:
+    path: "{{ ceph_immutable_object_cache_dir }}"
+    owner: "{{ ceph_immutable_object_cache_owner }}"
+    group: "{{ ceph_immutable_object_cache_group }}"
+    mode: "{{ ceph_immutable_object_cache_mode }}"
+
+- name: Add libvirt-qemu user to ceph group
+  user:
+    append: true
+    name: "{{ ceph_immutable_object_cache_group }}"
+    groups: "ceph"
+
+- name: Create ceph immutable object cache service overrides
+  import_role:
+    name: systemd_service
+  vars:
+    systemd_services:
+      - service_name: "{{ ceph_immutable_object_cache_service_name }}"
+        systemd_overrides_only: true
+        systemd_overrides:
+          Service:
+            UMask: "{{ ceph_immutable_object_cache_umask }}"
+            ExecStart: "{{ ['', '/usr/bin/ceph-immutable-object-cache -f --cluster ${CLUSTER} --name client.immutable-object-cache --setuser ' ~ ceph_immutable_object_cache_owner ~ ' --setgroup ' ~ ceph_immutable_object_cache_group ] }}"
+
+- name: Ensure ceph immutable object cache service is running
+  service:
+    name: "{{ ceph_immutable_object_cache_service_name }}1.service"
+    state: started
+    enabled: true

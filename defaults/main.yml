@@ -75,12 +75,13 @@ ceph_cluster_name: ceph
 # etc..
 #ceph_keyrings_dir: "/etc/openstack/ceph-keyrings"
 
-# Ceph client usernames for glance, cinder+nova and gnocchi
+# Ceph client usernames for glance, cinder+nova, gnocchi and object cache
 glance_ceph_client: glance
 cinder_ceph_client: cinder
 manila_ceph_client: manila
 cinder_backup_ceph_client: cinder-backup
 gnocchi_ceph_client: gnocchi
+immutable_object_cache_client: immutable-object-cache
 
 # by default we assume you use rbd for both cinder and nova, and as libvirt
 # needs to access both volumes (cinder) as boot disks (nova) we default to
@@ -125,3 +126,14 @@ ceph_client_ceph_conf_overrides: "{{ ceph_conf_overrides | default({}) }}"
 # CentOS repos
 ceph_centos_epel_mirror: "{{ centos_epel_mirror | default('http://download.fedoraproject.org/pub/epel') }}"
 ceph_centos_epel_key: "{{ centos_epel_key | default('http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-' ~ ansible_facts['distribution_major_version']) }}"
+
+# Immutible object cache - caches a read-only base layer of rbd volumes
+ceph_immutable_object_cache_enabled: False
+ceph_immutable_object_cache_service_name: "ceph-immutable-object-cache@"
+ceph_immutable_object_cache_dir: "/ceph-immutable-object-cache"
+ceph_immutable_object_cache_umask: "0002"
+ceph_immutable_object_cache_owner: "ceph"
+ceph_immutable_object_cache_group: "libvirt-qemu"
+ceph_immutable_object_cache_mode: "0755"
+ceph_immutable_object_cache_key_owner: "{{ ceph_immutable_object_cache_owner }}"
+ceph_immutable_object_cache_key_group: "{{ ceph_immutable_object_cache_group }}"
