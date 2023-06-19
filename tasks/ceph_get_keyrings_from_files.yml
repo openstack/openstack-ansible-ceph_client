@@ -21,7 +21,7 @@
       {% set _keys = {} %}
       {% for client in ceph_client_filtered_clients %}
       {%   set _ = _keys.update({
-              client: lookup('file', ceph_keyrings_dir ~ '/' ~ client['name'] ~ '.keyring')
+              client['name']: lookup('file', ceph_keyrings_dir ~ '/' ~ client['name'] ~ '.keyring')
           })
       %}
       {% endfor %}
