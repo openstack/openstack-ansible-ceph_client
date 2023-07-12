@@ -23,17 +23,17 @@ ceph_components:
       - name: '{{ glance_ceph_client }}'
     service: '{{ ceph_glance_service_names }}'
   - component: cinder_volume
-    package: "{{ [ 'ceph-common' ] + python_ceph_packages }}"
+    package: "{{ ['ceph-common'] + python_ceph_packages }}"
     client:
       - name: '{{ cinder_ceph_client }}'
     service: '{{ ceph_cinder_service_names }}'
   - component: cinder_backup
-    package: "{{ [ 'ceph-common' ] + python_ceph_packages }}"
+    package: "{{ ['ceph-common'] + python_ceph_packages }}"
     client:
       - name: '{{ cinder_backup_ceph_client }}'
     service: '{{ ceph_cinder_service_names }}'
   - component: nova_compute
-    package: "{{ (libvirt_packages + [ 'ceph-common' ] + ceph_immutable_object_cache_packages + python_ceph_packages) | select }}"
+    package: "{{ (libvirt_packages + ['ceph-common'] + ceph_immutable_object_cache_packages + python_ceph_packages) | select }}"
     client:
       - name: "{{ nova_ceph_client }}"
       - name: "{{ immutable_object_cache_client }}"
@@ -42,7 +42,7 @@ ceph_components:
         enabled: "{{ ceph_immutable_object_cache_enabled }}"
     service: '{{ ceph_nova_service_names }}'
   - component: manila_share
-    package: "{{ ['ceph-common'] + python_ceph_packages  }}"
+    package: "{{ ['ceph-common'] + python_ceph_packages }}"
     client:
       - name: "{{ manila_ceph_client }}"
     service: "{{ ceph_manila_service_names }}"

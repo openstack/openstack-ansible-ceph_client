@@ -17,29 +17,31 @@ galaxy_info:
   author: openstack
   description: Installation and configuration of the ceph client
   company: OpenStack Foundation
+  role_name: ceph_client
+  namespace: openstack
   license: Apache2
-  min_ansible_version: 2.2
+  min_ansible_version: "2.10"
   platforms:
     - name: Debian
       versions:
-        - buster
+        - bullseye
     - name: Ubuntu
       versions:
-        - bionic
         - focal
+        - jammy
     - name: EL
       versions:
-        - 8
+        - "9"
 
-  categories:
+  galaxy_tags:
     - cloud
     - ceph
     - development
     - openstack
 
 dependencies:
-- role: apt_package_pinning
-  apt_pinned_packages: "{{ ceph_apt_pinned_packages }}"
-  apt_package_pinning_file_name: "ceph_client_pin.pref"
-  when:
-    - ansible_facts['pkg_mgr'] == 'apt'
+  - role: apt_package_pinning
+    apt_pinned_packages: "{{ ceph_apt_pinned_packages }}"
+    apt_package_pinning_file_name: "ceph_client_pin.pref"
+    when:
+      - ansible_facts['pkg_mgr'] == 'apt'

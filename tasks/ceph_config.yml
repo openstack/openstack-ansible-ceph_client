@@ -46,9 +46,9 @@
   openstack.config_template.config_template:
     content: '{{ ceph_conf }}'
     dest: "/etc/ceph/{{ ceph_cluster_name }}.conf"
-    owner:  root
-    group:  root
-    mode:   0644
+    owner: root
+    group: root
+    mode: "0644"
     config_type: ini
     config_overrides: '{{ ceph_client_ceph_conf_overrides }}'
   notify:
@@ -62,7 +62,8 @@
     - inventory_hostname in groups[item]
   with_items: "{{ ceph_extra_config_groups }}"
 
-- include_tasks: ceph_config_extra.yml
+- name: Including ceph_config_extra tasks
+  include_tasks: ceph_config_extra.yml
   when:
     - ceph_in_extra_config_group is defined
     - ceph_in_extra_config_group | bool

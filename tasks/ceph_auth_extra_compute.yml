@@ -15,15 +15,20 @@
 
 
 - name: Create key files for nova_compute on extra cluster(s)
-  shell: "ceph auth get-key client.{{ item.client_name }} --cluster {{ ceph_cluster_name }} > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.key.tmp"
+  shell: >-
+    ceph auth get-key client.{{ item.client_name }} --cluster {{ ceph_cluster_name }}
+    > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.key.tmp
   with_items: "{{ ceph_extra_confs }}"
+  changed_when: false
   delegate_to: "{{ item.mon_host }}"
   when:
     - item.client_name is defined
     - item.mon_host is defined
 
 - name: Get extra key files
-  command: "scp {{ item.mon_host }}:/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.key.tmp /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
+  command: >-
+    scp {{ item.mon_host }}:/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.key.tmp
+    /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp
   changed_when: false
   delegate_to: localhost
   with_items: "{{ ceph_extra_confs }}"
@@ -35,6 +40,7 @@
   copy:
     src: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     dest: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
+    mode: "0640"
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.mon_host is defined
@@ -44,6 +50,7 @@
   copy:
     src: "{{ item.keyring_src }}"
     dest: "/tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp"
+    mode: "0640"
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.keyring_src is defined
@@ -74,7 +81,7 @@
 - name: Check if extra secret(s) are defined in libvirt pt1
   shell: "virsh secret-dumpxml {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
   changed_when: false
-  failed_when:  false
+  failed_when: false
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.secret_uuid is defined
@@ -84,7 +91,7 @@
 - name: Check if extra secret(s) are defined in libvirt pt2
   shell: "ls /tmp | grep \\.libvirt_secret_exists | awk -F'.' '{print $1}'"
   changed_when: false
-  failed_when:  false
+  failed_when: false
   register: libvirt_secret_exists
   with_items: "{{ ceph_extra_confs }}"
   when:
@@ -108,7 +115,7 @@
 - name: Check if extra secret values are set in libvirt pt1
   shell: "virsh secret-get-value {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists "
   changed_when: false
-  failed_when:  false
+  failed_when: false
   register: libvirt_nova_set
   with_items: "{{ ceph_extra_confs }}"
   when:
@@ -117,7 +124,7 @@
 - name: Check if extra secret values are set in libvirt pt2
   shell: "ls /tmp | grep \\.libvirt_secret_value_exists | awk -F'.' '{print $1}'"
   changed_when: false
-  failed_when:  false
+  failed_when: false
   register: libvirt_secret_value_exists
   with_items: "{{ ceph_extra_confs }}"
   when:
@@ -125,7 +132,7 @@
   tags:
     - always
 
-- name: Set extra secret value(s) in libvirt from monitor host
+- name: Set extra secret value(s) in libvirt from monitor host # noqa: no-changed-when
   shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(cat /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp)"
   loop: "{{ ceph_extra_confs }}"
   loop_control:
@@ -138,8 +145,10 @@
   notify:
     - Restart os services
 
-- name: Set extra secret value(s) in libvirt from keyring
-  shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(awk '/key = /{print $3}' /tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp)"
+- name: Set extra secret value(s) in libvirt from keyring # noqa: no-changed-when
+  shell: >-
+    virsh secret-set-value --secret {{ item.secret_uuid }} --base64
+    $(awk '/key = /{print $3}' /tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp)
   loop: "{{ ceph_extra_confs }}"
   loop_control:
     index_var: index

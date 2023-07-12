@@ -18,4 +18,3 @@
     state: restarted
   with_items: "{{ ceph_client_filtered_services }}"
   failed_when: false
-

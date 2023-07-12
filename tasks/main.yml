@@ -41,38 +41,45 @@
   when:
     - ceph_pkg_source not in ['ceph', 'distro']
 
-- include_tasks: "ceph_preinstall_{{ ansible_facts['pkg_mgr'] }}.yml"
+- name: Including ceph_preinstall tasks
+  include_tasks: "ceph_preinstall_{{ ansible_facts['pkg_mgr'] }}.yml"
   when:
     - ceph_pkg_source != 'distro'
   tags:
     - ceph-install
 
-- include_tasks: ceph_install.yml
+- name: Including ceph_install tasks
+  include_tasks: ceph_install.yml
   tags:
     - ceph-install
 
-- include_tasks: ceph_install_python_libs.yml
+- name: Including ceph_install_python_libs tasks
+  include_tasks: ceph_install_python_libs.yml
   when:
     - openstack_service_venv_bin | length > 0
   tags:
     - ceph-install
 
-- include_tasks: ceph_get_mon_host.yml
+- name: Including ceph_get_mon_host tasks
+  include_tasks: ceph_get_mon_host.yml
   when: ceph_conf_file is not defined or ceph_keyrings_dir is not defined
   tags:
     - ceph-config
 
-- include_tasks: ceph_config.yml
+- name: Including ceph_config tasks
+  include_tasks: ceph_config.yml
   tags:
     - ceph-config
 
-- include_tasks: ceph_auth.yml
+- name: Including ceph_auth tasks
+  include_tasks: ceph_auth.yml
   when:
     - cephx | bool
   tags:
     - ceph-config
 
-- include_tasks: ceph_immutable_object_cache.yml
+- name: Including ceph_immutable_object_cache tasks
+  include_tasks: ceph_immutable_object_cache.yml
   when:
     - ceph_immutable_object_cache_enabled | bool
   tags:

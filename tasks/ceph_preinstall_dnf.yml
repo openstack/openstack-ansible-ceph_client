@@ -15,8 +15,9 @@
 
 - name: Download EPEL gpg keys
   get_url:
-     url: "{{ ceph_centos_epel_key }}"
-     dest: /etc/pki/rpm-gpg
+    url: "{{ ceph_centos_epel_key }}"
+    dest: /etc/pki/rpm-gpg
+    mode: "0640"
   register: _get_yum_keys
   until: _get_yum_keys is success
   retries: 5
@@ -54,7 +55,10 @@
     - ceph_pkg_source == 'ceph'
 
 - name: Install Ceph gpg keys
-  rpm_key: "{{ key }}"
+  rpm_key:
+    key: "{{ key['key'] }}"
+    fingerprint: "{{ key['fingerprint'] | default(omit) }}"
+    state: "{{ key['state'] | default('present') }}"
   with_items: "{{ ceph_gpg_keys }}"
   loop_control:
     loop_var: key

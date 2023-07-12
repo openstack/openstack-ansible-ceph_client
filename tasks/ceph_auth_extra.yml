@@ -15,8 +15,12 @@
 
 
 - name: Create keyring files for openstack clients from extra cluster(s)
-  shell: "ceph auth get client.{{ item.client_name }} --cluster {{ ceph_cluster_name }} >/dev/null && ceph auth get-or-create client.{{ item.client_name }} --cluster {{ ceph_cluster_name }} > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp"
+  shell: >-
+    ceph auth get client.{{ item.client_name }} --cluster {{ ceph_cluster_name }} >/dev/null &&
+    ceph auth get-or-create client.{{ item.client_name }} --cluster {{ ceph_cluster_name }}
+    > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp
   with_items: "{{ ceph_extra_confs }}"
+  changed_when: false
   delegate_to: "{{ item.mon_host }}"
   when:
     - item.client_name is defined
@@ -36,7 +40,7 @@
   file:
     path: "{{ item.keyring_src }}"
     state: file
-    mode: 0600
+    mode: "0600"
   delegate_to: localhost
   with_items: "{{ ceph_extra_confs }}"
   when:
@@ -57,9 +61,9 @@
   copy:
     src: "{{ item.keyring_src }}"
     dest: "{{ item.keyring_dest }}"
-    owner:  root
-    group:  "{{ cephkeys_access_group }}"
-    mode:   0640
+    owner: root
+    group: "{{ cephkeys_access_group }}"
+    mode: "0640"
   notify:
     - Restart os services
   with_items: "{{ ceph_extra_confs }}"

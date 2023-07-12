@@ -40,7 +40,7 @@ ceph_client_package_state: "{{ package_state | default('latest') }}"
 #            package repositories.
 ceph_pkg_source: ceph
 ceph_stable_release: pacific
-ceph_apt_pinned_packages: [{ package: "*", release: "ceph.com",  priority: 1001 }]
+ceph_apt_pinned_packages: [{package: "*", release: "ceph.com", priority: 1001}]
 
 # Ceph Authentication
 cephx: true
@@ -55,14 +55,14 @@ ceph_cluster_name: ceph
 
 # Path to local ceph.conf file
 # Leave this commented to obtain a ceph.conf from one of the monitors defined in ceph_mons
-#ceph_conf_file: |
-#  [global]
-#  fsid = 4037aa5f-abde-4378-9470-f73dbd6ceaba
-#  mon_initial_members = mon1.example.local,mon2.example.local,mon3.example.local
-#  mon_host = 10.16.5.40,10.16.5.41,10.16.5.42
-#  auth_cluster_required = cephx
-#  auth_service_required = cephx
-#  auth_client_required = cephx
+# ceph_conf_file: |
+#   [global]
+#   fsid = 4037aa5f-abde-4378-9470-f73dbd6ceaba
+#   mon_initial_members = mon1.example.local,mon2.example.local,mon3.example.local
+#   mon_host = 10.16.5.40,10.16.5.41,10.16.5.42
+#   auth_cluster_required = cephx
+#   auth_service_required = cephx
+#   auth_client_required = cephx
 
 # Path to local keyrings directory
 # If you want to provide keyrings from existing files, because you do not have ssh access to the monitors
@@ -73,7 +73,7 @@ ceph_cluster_name: ceph
 # cinder.keyring
 # glance.keyring
 # etc..
-#ceph_keyrings_dir: "/etc/openstack/ceph-keyrings"
+# ceph_keyrings_dir: "/etc/openstack/ceph-keyrings"
 
 # Ceph client usernames for glance, cinder+nova, gnocchi and object cache
 glance_ceph_client: glance
@@ -125,7 +125,8 @@ ceph_client_ceph_conf_overrides: "{{ ceph_conf_overrides | default({}) }}"
 
 # CentOS repos
 ceph_centos_epel_mirror: "{{ centos_epel_mirror | default('http://download.fedoraproject.org/pub/epel') }}"
-ceph_centos_epel_key: "{{ centos_epel_key | default('http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-' ~ ansible_facts['distribution_major_version']) }}"
+ceph_centos_epel_key: >-
+  {{ centos_epel_key | default('http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-' ~ ansible_facts['distribution_major_version']) }}
 
 # Immutible object cache - caches a read-only base layer of rbd volumes
 ceph_immutable_object_cache_enabled: False

@@ -27,9 +27,9 @@
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner:  root
-    group:  root
-    mode:   0644
+    owner: root
+    group: root
+    mode: "0644"
   notify:
     - Restart os services
   with_items: "{{ ceph_extra_confs }}"
@@ -43,7 +43,8 @@
     section: "client.{{ item.client_name }}"
     option: keyring
     value: "{{ item.keyring_dest }}"
-  with_items:  "{{ ceph_extra_confs }}"
+    mode: "0640"
+  with_items: "{{ ceph_extra_confs }}"
   when:
     - item.src is defined
     - item.dest is defined

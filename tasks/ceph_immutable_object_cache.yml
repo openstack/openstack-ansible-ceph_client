@@ -35,7 +35,16 @@
         systemd_overrides:
           Service:
             UMask: "{{ ceph_immutable_object_cache_umask }}"
-            ExecStart: "{{ ['', '/usr/bin/ceph-immutable-object-cache -f --cluster ${CLUSTER} --name client.immutable-object-cache --setuser ' ~ ceph_immutable_object_cache_owner ~ ' --setgroup ' ~ ceph_immutable_object_cache_group ] }}"
+            ExecStart: >-
+              {{
+                [
+                  '',
+                  '/usr/bin/ceph-immutable-object-cache -f --cluster ${CLUSTER} --name client.immutable-object-cache --setuser ' ~
+                  ceph_immutable_object_cache_owner ~
+                  ' --setgroup ' ~
+                  ceph_immutable_object_cache_group
+                ]
+              }}
 
 - name: Ensure ceph immutable object cache service is running
   service:

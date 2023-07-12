@@ -29,10 +29,15 @@
     src: "gpg/{{ item.id }}"
     dest: "{{ item.file }}"
     mode: '0644'
-  with_items: "{{ ceph_gpg_keys | selectattr('file','defined') | list }}"
+  with_items: "{{ ceph_gpg_keys | selectattr('file', 'defined') | list }}"
 
 - name: Add ceph apt-keys
-  apt_key: "{{ key }}"
+  apt_key:
+    data: "{{ key['data'] | default(omit) }}"
+    file: "{{ key['file'] | default(omit) }}"
+    id: "{{ key['id'] | default(omit) }}"
+    state: "{{ key['state'] | default('present') }}"
+    url: "{{ key['url'] | default(omit) }}"
   with_items: "{{ ceph_gpg_keys }}"
   loop_control:
     loop_var: key
