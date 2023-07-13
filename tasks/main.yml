@@ -45,11 +45,19 @@
   include_tasks: "ceph_preinstall_{{ ansible_facts['pkg_mgr'] }}.yml"
   when:
     - ceph_pkg_source != 'distro'
+  args:
+    apply:
+      tags:
+        - ceph-install
   tags:
     - ceph-install
 
 - name: Including ceph_install tasks
   include_tasks: ceph_install.yml
+  args:
+    apply:
+      tags:
+        - ceph-install
   tags:
     - ceph-install
 
@@ -57,17 +65,29 @@
   include_tasks: ceph_install_python_libs.yml
   when:
     - openstack_service_venv_bin | length > 0
+  args:
+    apply:
+      tags:
+        - ceph-install
   tags:
     - ceph-install
 
 - name: Including ceph_get_mon_host tasks
   include_tasks: ceph_get_mon_host.yml
   when: ceph_conf_file is not defined or ceph_keyrings_dir is not defined
+  args:
+    apply:
+      tags:
+        - ceph-config
   tags:
     - ceph-config
 
 - name: Including ceph_config tasks
   include_tasks: ceph_config.yml
+  args:
+    apply:
+      tags:
+        - ceph-config
   tags:
     - ceph-config
 
@@ -75,6 +95,10 @@
   include_tasks: ceph_auth.yml
   when:
     - cephx | bool
+  args:
+    apply:
+      tags:
+        - ceph-config
   tags:
     - ceph-config
 
@@ -82,6 +106,10 @@
   include_tasks: ceph_immutable_object_cache.yml
   when:
     - ceph_immutable_object_cache_enabled | bool
+  args:
+    apply:
+      tags:
+        - ceph-config
   tags:
     - ceph-config
 
