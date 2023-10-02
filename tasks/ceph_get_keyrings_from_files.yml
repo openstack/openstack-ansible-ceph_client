@@ -57,6 +57,7 @@
       stdout: "{{ (ceph_client_keys[nova_ceph_client] | regex_search('.*^\\s*key\\s*=\\s*(.*)$.*', '\\1', multiline=True))[0] }}"
   when:
     - inventory_hostname in groups.nova_compute
+    - nova_ceph_client in ceph_client_filtered_clients | map(attribute='name') | list
   delegate_to: localhost
   tags:
     - always
