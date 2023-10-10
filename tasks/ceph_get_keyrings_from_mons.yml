@@ -61,6 +61,7 @@
   command: ceph auth get-key client.{{ nova_ceph_client }} --cluster {{ ceph_cluster_name }}
   when:
     - inventory_hostname in groups.nova_compute
+    - nova_ceph_client in ceph_client_filtered_clients | map(attribute='name') | list
   changed_when: false
   delegate_to: '{{ ceph_mon_host }}'
   register: ceph_nova_secret
