@@ -131,6 +131,7 @@ ceph_centos_epel_key: "{{ centos_epel_key | default('http://download.fedoraproje
 ceph_immutable_object_cache_enabled: False
 ceph_immutable_object_cache_service_name: "ceph-immutable-object-cache@"
 ceph_immutable_object_cache_dir: "/ceph-immutable-object-cache"
+ceph_immutable_object_cache_socket: "/run/ceph/immutable_object_cache_sock"
 ceph_immutable_object_cache_umask: "0002"
 ceph_immutable_object_cache_owner: "ceph"
 ceph_immutable_object_cache_group: "libvirt-qemu"

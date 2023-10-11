@@ -78,6 +78,20 @@
   tags:
     - ceph-config
 
+- name: Write AppArmor configuration for ceph immutable object caching
+  ansible.builtin.blockinfile:
+    path: /etc/apparmor.d/local/abstractions/libvirt-qemu
+    marker: "### {mark} OSA CEPH_CLIENT IMMUTABLE OBJECT CACHE BLOCK ###"
+    block: |
+        {{ ceph_immutable_object_cache_dir }}/** r,
+        {{ ceph_immutable_object_cache_socket }} rw,
+    state: "{{ ceph_immutable_object_cache_enabled | bool | ternary('present', 'absent') }}"
+  when:
+    - ansible_facts['os_family'] == "Debian"
+    - "'nova_compute' in group_names"
+  tags:
+    - ceph-config
+
 - name: Set permissions on persistent write log cache directory
   file:
     path: "{{ ceph_persistent_write_log_cache_dir }}"
@@ -85,5 +99,18 @@
     group: "{{ ceph_persistent_write_log_cache_group }}"
     mode: "{{ ceph_persistent_write_log_cache_mode }}"
   when: ceph_persistent_write_log_cache_enabled | bool
+  tags:
+    - ceph-config
+
+- name: Write AppArmor configuration for ceph write log caching
+  ansible.builtin.blockinfile:
+    path: /etc/apparmor.d/local/abstractions/libvirt-qemu
+    marker: "### {mark} OSA CEPH_CLIENT WRITE LOG CACHE BLOCK ###"
+    block: |
+        {{ ceph_persistent_write_log_cache_dir }}/** rwk,
+    state: "{{ ceph_persistent_write_log_cache_enabled | bool | ternary('present', 'absent') }}"
+  when:
+    - ansible_facts['os_family'] == "Debian"
+    - "'nova_compute' in group_names"
   tags:
     - ceph-config
