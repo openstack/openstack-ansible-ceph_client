@@ -59,7 +59,7 @@ ceph_extra_components: []
 #    package:
 #      - "{{ python_ceph_package }}"
 #    client:
-#      - '{{ gnocchi_ceph_client }}'
+#      - name: '{{ gnocchi_ceph_client }}'
 #    service: '{{ ceph_gnocchi_service_names }}'
 
 ceph_client_filtered_packages: |-
@@ -94,7 +94,9 @@ ceph_client_filtered_clients: |-
             (cinder_service_backup_driver is defined and
              'ceph' in cinder_service_backup_driver))) %}
  {%       for client in comp.client %}
- {%         if client['enabled'] | default(true) | bool  %}
+ {%         if client is not mapping %}
+ {%           set _ = clients.append({'name': client}) %}
+ {%         elif client['enabled'] | default(true) | bool  %}
  {%           set _ = clients.append(client) %}
  {%         endif %}
  {%       endfor %}
