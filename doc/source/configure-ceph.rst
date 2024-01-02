@@ -159,7 +159,7 @@ configurations need to be added to the user variable file:
     - component: gnocchi_api
       package: "{{ python_ceph_packages }}"
       client:
-        - '{{ gnocchi_ceph_client }}'
+        - name: '{{ gnocchi_ceph_client }}'
       service: '{{ ceph_gnocchi_service_names }}'
 
 
