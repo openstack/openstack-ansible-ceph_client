@@ -43,7 +43,7 @@
     section: "client.{{ item.client_name }}"
     option: keyring
     value: "{{ item.keyring_dest }}"
-    mode: "0640"
+    mode: "0644"
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.src is defined
