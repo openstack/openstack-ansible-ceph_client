@@ -32,6 +32,7 @@
     systemd_services:
       - service_name: "{{ ceph_immutable_object_cache_service_name }}"
         systemd_overrides_only: true
+        load: false
         systemd_overrides:
           Service:
             UMask: "{{ ceph_immutable_object_cache_umask }}"
