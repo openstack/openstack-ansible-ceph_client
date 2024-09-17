@@ -115,6 +115,8 @@
 
 - name: Write AppArmor configuration for ceph immutable object caching
   ansible.builtin.blockinfile:
+    create: True
+    mode: "0644"
     path: /etc/apparmor.d/local/abstractions/libvirt-qemu
     marker: "### {mark} OSA CEPH_CLIENT IMMUTABLE OBJECT CACHE BLOCK ###"
     block: |
@@ -139,6 +141,8 @@
 
 - name: Write AppArmor configuration for ceph write log caching
   ansible.builtin.blockinfile:
+    create: True
+    mode: "0644"
     path: /etc/apparmor.d/local/abstractions/libvirt-qemu
     marker: "### {mark} OSA CEPH_CLIENT WRITE LOG CACHE BLOCK ###"
     block: |
