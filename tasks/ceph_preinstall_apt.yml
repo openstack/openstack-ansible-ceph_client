@@ -15,7 +15,7 @@
 
 - name: Validate repo config is deb822 format
   vars:
-    _repo_check: "{{ ceph_apt_repos.values() | selectattr('repo', 'defined') | map(attribute='repo') }}"
+    _repo_check: "{{ ceph_repos | selectattr('repo', 'defined') | map(attribute='repo') }}"
   ansible.builtin.assert:
     that: _repo_check | length == 0
     fail_msg: "The following repository definitions must be updated to deb822 format {{ _repo_check }}"
@@ -24,7 +24,7 @@
 - name: Find legacy repository files
   find:
     paths: /etc/apt/sources.list.d/
-    patterns: "{{ ceph_apt_repo_url | urlsplit('hostname') | replace('.', '_') }}_*.list"
+    patterns: "{{ ceph_repo_url | urlsplit('hostname') | replace('.', '_') }}_*.list"
   register: _legacy_apt_repos
 
 - name: Clean up legacy repository config not in deb822 format
@@ -70,7 +70,7 @@
     trusted: "{{ item.trusted | default(omit) }}"
     types: "{{ item.types | default(omit) }}"
     uris: "{{ item.uris | default(omit) }}"
-  loop: "{{ ceph_apt_repos.values() }}"
+  loop: "{{ ceph_repos }}"
   loop_control:
     label: "{{ loop_label | to_json }}"
   register: deb822_repos

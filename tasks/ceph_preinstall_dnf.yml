@@ -15,42 +15,23 @@
 
 - name: Download EPEL gpg keys
   get_url:
-    url: "{{ ceph_centos_epel_key }}"
-    dest: /etc/pki/rpm-gpg
+    url: "{{ item.url }}"
+    dest: "{{ item.key }}"
     mode: "0640"
+  with_items: "{{ ceph_gpg_keys | selectattr('url', 'defined') }}"
   register: _get_yum_keys
   until: _get_yum_keys is success
   retries: 5
   delay: 2
-
-- name: Install EPEL gpg keys
-  rpm_key:
-    key: "/etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
-    state: present
-
-- name: Install the EPEL repository
-  yum_repository:
-    name: ceph-client-deps
-    baseurl: "{{ ceph_centos_epel_mirror ~ '/' ~ ansible_facts['distribution_major_version'] ~ '/Everything/' ~ ansible_facts['architecture'] }}"
-    description: "Extra Packages for Enterprise Linux {{ ansible_facts['distribution_major_version'] }} - $basearch"
-    gpgcheck: yes
-    gpgkey: "file:///etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
-    enabled: yes
-    state: present
-    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath, fmt, thrift'
   when:
-    - ansible_facts['pkg_mgr'] == 'dnf'
-  register: install_epel_repo
-  until: install_epel_repo  is success
-  retries: 5
-  delay: 2
+    - ceph_pkg_source == 'ceph'
 
 - name: Copy Ceph gpg keyfile to the key location
   copy:
-    src: "gpg/{{ item.key | basename }}"
+    src: "{{ item.src }}"
     dest: "{{ item.key }}"
-    mode: '0644'
-  with_items: "{{ ceph_gpg_keys }}"
+    mode: "0640"
+  with_items: "{{ ceph_gpg_keys | selectattr('src', 'defined') }}"
   when:
     - ceph_pkg_source == 'ceph'
 
@@ -69,24 +50,22 @@
   retries: 5
   delay: 2
 
-- name: Add ceph repo
+- name: Install required repositories
   yum_repository:
-    name: ceph
-    description: "Ceph packages for $basearch"
-    file: ceph
-    baseurl: "{{ ceph_yum_repo_url }}/$basearch"
-    gpgcheck: yes
-    enabled: yes
-    priority: 50
-    state: present
-
-- name: Add ceph noarch repo
-  yum_repository:
-    name: ceph-noarch
-    description: "Ceph noarch packages"
-    file: ceph
-    baseurl: "{{ ceph_yum_repo_url }}/noarch"
-    gpgcheck: yes
-    enabled: yes
-    priority: 50
-    state: present
+    baseurl: "{{ item.baseurl }}"
+    description: "{{ item.description | default(omit) }}"
+    enabled: "{{ item.enabled | default(True) }}"
+    file: "{{ item.file | default(omit) }}"
+    includepkgs: "{{ item.includepkgs | default(omit) }}"
+    gpgcheck: "{{ item.gpgcheck | default(omit) }}"
+    gpgkey: "{{ item.gpgkey | default(omit) }}"
+    name: "{{ item.name }}"
+    priority: "{{ item.priority | default(omit) }}"
+    state: "{{ item.enabled | default('present') }}"
+  with_items: "{{ ceph_repos }}"
+  when:
+    - ansible_facts['pkg_mgr'] == 'dnf'
+  register: install_repo
+  until: install_repo  is success
+  retries: 5
+  delay: 2

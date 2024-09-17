@@ -17,6 +17,11 @@
 ceph_gpg_keys:
   # download.ceph.com/keys/release.asc
   - key: /etc/pki/rpm-gpg/ceph_com_keys_release
+    src: gpg/ceph_com_keys_release
+    state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
+  - key: "/etc/pki/rpm-gpg/{{ ceph_centos_epel_key | basename }}"
+    url: "{{ ceph_centos_epel_key }}"
+    state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
 
 libvirt_packages:
   - libvirt-daemon-kvm
@@ -29,7 +34,31 @@ python_ceph_packages:
   - python3-rados
   - python3-rbd
 
-ceph_repo_url_region: "download" # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
-ceph_yum_repo_url: "https://{{ ceph_repo_url_region }}.ceph.com/rpm-{{ ceph_stable_release }}/el{{ ansible_facts['distribution_major_version'] }}"
+_ceph_repo_distro_suffix: rpm
+_ceph_repos:
+  - name: ceph-client-deps
+    baseurl: "{{ ceph_centos_epel_mirror ~ '/' ~ ansible_facts['distribution_major_version'] ~ '/Everything/' ~ ansible_facts['architecture'] }}"
+    description: "Extra Packages for Enterprise Linux {{ ansible_facts['distribution_major_version'] }} - $basearch"
+    gpgcheck: yes
+    gpgkey: "file:///etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
+    enabled: yes
+    state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
+    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath, fmt, thrift'
+  - name: ceph
+    description: "Ceph packages for $basearch"
+    file: ceph
+    baseurl: "{{ ceph_yum_repo_url }}/el$releasever/$basearch"
+    gpgcheck: yes
+    enabled: yes
+    priority: 50
+    state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
+  - name: ceph-noarch
+    description: "Ceph noarch packages"
+    file: ceph
+    baseurl: "{{ ceph_yum_repo_url }}/el$releasever/noarch"
+    gpgcheck: yes
+    enabled: yes
+    priority: 50
+    state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
 
 # TODO mgariepy: add CentOS SIG ceph repo.
