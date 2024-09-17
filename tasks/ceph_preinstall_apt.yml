@@ -19,6 +19,8 @@
   ansible.builtin.assert:
     that: _repo_check | length == 0
     fail_msg: "The following repository definitions must be updated to deb822 format {{ _repo_check }}"
+  when:
+    - ceph_pkg_source == 'ceph'
 
 # NOTE(jrosser) remove this task for the 2025.2 release
 - name: Find legacy repository files
