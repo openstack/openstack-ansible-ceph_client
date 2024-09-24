@@ -36,5 +36,5 @@ _ceph_repos:
     uris: "{{ ceph_repo_url }}"
     signed_by: "{{ lookup('file', 'gpg/460f3994') }}"
     components: main
-    architectures: "{{ ansible_facts['architecture'] }}"
+    architectures: "{{ ceph_architecture_mapping.get(ansible_facts['architecture']) }}"
     state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
