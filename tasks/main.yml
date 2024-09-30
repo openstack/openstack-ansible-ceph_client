@@ -43,8 +43,6 @@
 
 - name: Including ceph_preinstall tasks
   include_tasks: "ceph_preinstall_{{ ansible_facts['pkg_mgr'] }}.yml"
-  when:
-    - ceph_pkg_source != 'distro'
   args:
     apply:
       tags:
