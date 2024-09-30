@@ -42,6 +42,10 @@ ceph_pkg_source: ceph
 ceph_stable_release: reef
 ceph_apt_pinned_packages: [{package: "*", release: "ceph.com", priority: 1001}]
 
+ceph_repo_url_region: "download"  # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
+ceph_repo_url: https://{{ ceph_repo_url_region }}.ceph.com/{{ _ceph_repo_distro_suffix }}-{{ ceph_stable_release }}
+ceph_repos: "{{ _ceph_repos }}"
+
 # Ceph Authentication
 cephx: true
 
