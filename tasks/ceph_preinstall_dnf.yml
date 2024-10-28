@@ -37,7 +37,7 @@
     gpgkey: "file:///etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
     enabled: yes
     state: present
-    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath, fmt, thrift'
+    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath, fmt, thrift, parquet-libs, libarrow, libarrow-doc, re2'
   when:
     - ansible_facts['pkg_mgr'] == 'dnf'
   register: install_epel_repo
