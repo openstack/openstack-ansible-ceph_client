@@ -59,7 +59,7 @@
     gpgkey: "{{ item.gpgkey | default(omit) }}"
     name: "{{ item.name }}"
     priority: "{{ item.priority | default(omit) }}"
-    state: "{{ item.enabled | default('present') }}"
+    state: "{{ item.state | default('present') }}"
   with_items: "{{ ceph_repos }}"
   register: install_repo
   until: install_repo  is success
