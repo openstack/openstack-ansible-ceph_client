@@ -43,7 +43,18 @@ _ceph_repos:
     gpgkey: "file:///etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
     enabled: yes
     state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
-    includepkgs: 'lttng-ust*, userspace-rcu, libbabeltrace, leveldb, liboath, fmt, thrift'
+    includepkgs:
+      - fmt
+      - leveldb
+      - libarrow
+      - libarrow-doc
+      - libbabeltrace
+      - liboath
+      - 'lttng-ust*'
+      - parquet-libs
+      - re2
+      - thrift
+      - userspace-rcu
   - name: ceph
     description: "Ceph packages for $basearch"
     file: ceph
