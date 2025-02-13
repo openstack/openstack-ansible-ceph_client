@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Provide ceph configuration directory
-  file:
+  ansible.builtin.file:
     dest: /etc/ceph
     state: directory
     owner: root
@@ -22,7 +22,7 @@
     mode: "0755"
 
 - name: Get ceph.conf and store contents when ceph_conf_file is not defined
-  slurp:
+  ansible.builtin.slurp:
     src: "/etc/ceph/{{ ceph_cluster_name }}.conf"
   register: ceph_conf_content_mon
   delegate_to: "{{ ceph_mon_host }}"
@@ -31,13 +31,13 @@
     - ceph_conf_file is not defined
 
 - name: Register ceph_conf fact when ceph_conf_file is not defined
-  set_fact:
+  ansible.builtin.set_fact:
     ceph_conf: "{{ ceph_conf_content_mon.content | b64decode }}"
   when:
     - ceph_conf_file is not defined
 
 - name: Register ceph_conf fact when ceph_conf_file is defined
-  set_fact:
+  ansible.builtin.set_fact:
     ceph_conf: "{{ ceph_conf_file }}\n\n"
   when:
     - ceph_conf_file is defined
@@ -55,7 +55,7 @@
     - Restart os services
 
 - name: Detect correct group for extra config
-  set_fact:
+  ansible.builtin.set_fact:
     ceph_in_extra_config_group: true
   when:
     - ceph_extra_confs is defined
@@ -63,7 +63,7 @@
   with_items: "{{ ceph_extra_config_groups }}"
 
 - name: Including ceph_config_extra tasks
-  include_tasks: ceph_config_extra.yml
+  ansible.builtin.include_tasks: ceph_config_extra.yml
   when:
     - ceph_in_extra_config_group is defined
     - ceph_in_extra_config_group | bool

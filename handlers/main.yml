@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Restart os services
-  service:
+  ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
   with_items: "{{ ceph_client_filtered_services }}"

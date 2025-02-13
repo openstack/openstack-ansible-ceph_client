@@ -15,7 +15,7 @@
 
 # look for 1 ceph monitor host that is up
 - name: Verify Ceph monitors are up
-  wait_for_connection:
+  ansible.builtin.wait_for_connection:
     connect_timeout: 3
     timeout: 10
   delegate_to: "{{ item }}"
@@ -25,7 +25,7 @@
   register: ceph_mon_upcheck
 
 - name: Set ceph_mon_host to an online monitor host
-  set_fact:
+  ansible.builtin.set_fact:
     ceph_mon_host: "{{ item.item }}"
   when:
     - item is success
@@ -34,7 +34,7 @@
   with_items: "{{ ceph_mon_upcheck.results }}"
 
 - name: Fail when no ceph_mon_host is reachable
-  fail:
+  ansible.builtin.fail:
     msg: "No Ceph Monitor reachable"
   when:
     - ceph_mon_host is undefined

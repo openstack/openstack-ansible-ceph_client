@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Install ceph packages
-  package:
+  ansible.builtin.package:
     name: "{{ ceph_client_filtered_packages }}"
     state: "{{ ceph_client_package_state }}"
     update_cache: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"

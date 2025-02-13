@@ -24,20 +24,20 @@
 
 # NOTE(jrosser) remove this task for the 2025.2 release
 - name: Find legacy repository files
-  find:
+  ansible.builtin.find:
     paths: /etc/apt/sources.list.d/
     patterns: "{{ ceph_repo_url | urlsplit('hostname') | replace('.', '_') }}_*.list"
   register: _legacy_apt_repos
 
 - name: Clean up legacy repository config not in deb822 format
-  file:
+  ansible.builtin.file:
     path: "{{ item['path'] }}"
     state: absent
   with_items: "{{ _legacy_apt_repos['files'] }}"
   register: apt_repo_removed
 
 - name: Ensure python3-debian package is available
-  apt:
+  ansible.builtin.apt:
     name: python3-debian
 
 - name: Manage apt repositories
@@ -76,7 +76,7 @@
   register: deb822_repos
 
 - name: Update Apt cache
-  apt:
+  ansible.builtin.apt:
     update_cache: true
   when: (apt_repo_removed is changed) or (deb822_repos is changed)
   register: update_apt_cache

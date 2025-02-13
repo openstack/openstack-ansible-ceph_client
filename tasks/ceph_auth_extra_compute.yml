@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 - name: Create key files for nova_compute on extra cluster(s)
-  shell: >-
+  ansible.builtin.shell: >-
     ceph auth get-key client.{{ item.client_name }} --cluster {{ ceph_cluster_name }}
     > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.key.tmp
   with_items: "{{ ceph_extra_confs }}"
@@ -24,7 +24,7 @@
     - item.mon_host is defined
 
 - name: Get extra key files
-  command: >-
+  ansible.builtin.command: >-
     scp {{ item.mon_host }}:/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.key.tmp
     /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp
   changed_when: false
@@ -35,7 +35,7 @@
     - item.client_name is defined
 
 - name: Distribute extra key files from monitor host
-  copy:
+  ansible.builtin.copy:
     src: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     dest: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     mode: "0640"
@@ -45,7 +45,7 @@
     - item.client_name is defined
 
 - name: Create extra key files from keyring files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.keyring_src }}"
     dest: "/tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp"
     mode: "0640"
@@ -56,7 +56,7 @@
     - item.secret_uuid is defined
 
 - name: Remove temp extra key files
-  file:
+  ansible.builtin.file:
     path: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.key.tmp"
     state: absent
   delegate_to: "{{ item.mon_host }}"
@@ -67,7 +67,7 @@
     - item.client_name is defined
 
 - name: Provide extra xml files to create the secrets
-  template:
+  ansible.builtin.template:
     src: secret.xml.j2
     dest: /tmp/{{ item.secret_uuid }}{{ item.client_name }}-secret.xml
     mode: "0600"
@@ -77,7 +77,7 @@
     - item.secret_uuid is defined
 
 - name: Check if extra secret(s) are defined in libvirt pt1
-  shell: "virsh secret-dumpxml {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
+  ansible.builtin.shell: "virsh secret-dumpxml {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
   changed_when: false
   failed_when: false
   with_items: "{{ ceph_extra_confs }}"
@@ -87,7 +87,7 @@
     - always
 
 - name: Check if extra secret(s) are defined in libvirt pt2
-  shell: "ls /tmp | grep \\.libvirt_secret_exists | awk -F'.' '{print $1}'"
+  ansible.builtin.shell: "ls /tmp | grep \\.libvirt_secret_exists | awk -F'.' '{print $1}'"
   changed_when: false
   failed_when: false
   register: libvirt_secret_exists
@@ -98,7 +98,7 @@
     - always
 
 - name: Define libvirt nova extra secret(s)
-  command: "virsh secret-define --file /tmp/{{ item.secret_uuid }}{{ item.client_name }}-secret.xml"
+  ansible.builtin.command: "virsh secret-define --file /tmp/{{ item.secret_uuid }}{{ item.client_name }}-secret.xml"
   changed_when: false
   loop: "{{ ceph_extra_confs }}"
   loop_control:
@@ -111,7 +111,7 @@
     - Restart os services
 
 - name: Check if extra secret values are set in libvirt pt1
-  shell: "virsh secret-get-value {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists "
+  ansible.builtin.shell: "virsh secret-get-value {{ item.secret_uuid }} 2>&1 >/dev/null && touch /tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists "
   changed_when: false
   failed_when: false
   register: libvirt_nova_set
@@ -120,7 +120,7 @@
     - item.secret_uuid is defined
 
 - name: Check if extra secret values are set in libvirt pt2
-  shell: "ls /tmp | grep \\.libvirt_secret_value_exists | awk -F'.' '{print $1}'"
+  ansible.builtin.shell: "ls /tmp | grep \\.libvirt_secret_value_exists | awk -F'.' '{print $1}'"
   changed_when: false
   failed_when: false
   register: libvirt_secret_value_exists
@@ -131,7 +131,7 @@
     - always
 
 - name: Set extra secret value(s) in libvirt from monitor host # noqa: no-changed-when
-  shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(cat /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp)"
+  ansible.builtin.shell: "virsh secret-set-value --secret {{ item.secret_uuid }} --base64 $(cat /tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp)"
   loop: "{{ ceph_extra_confs }}"
   loop_control:
     index_var: index
@@ -144,7 +144,7 @@
     - Restart os services
 
 - name: Set extra secret value(s) in libvirt from keyring # noqa: no-changed-when
-  shell: >-
+  ansible.builtin.shell: >-
     virsh secret-set-value --secret {{ item.secret_uuid }} --base64
     $(awk '/key = /{print $3}' /tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp)
   loop: "{{ ceph_extra_confs }}"
@@ -160,7 +160,7 @@
 
 # Cleanup temp files
 - name: Remove libvirt nova secret detection file
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_exists"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
@@ -170,7 +170,7 @@
     - always
 
 - name: Remove libvirt nova secret value detection file
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.secret_uuid }}.libvirt_secret_value_exists"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
@@ -180,7 +180,7 @@
     - always
 
 - name: Remove libvirt nova secret file
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.secret_uuid }}{{ item.client_name }}-secret.xml"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
@@ -191,7 +191,7 @@
     - always
 
 - name: Remove libvirt key file from monitor host
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
@@ -202,7 +202,7 @@
     - always
 
 - name: Remove libvirt key file from keyring
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.secret_uuid }}{{ item.client_name }}.key.tmp"
     state: "absent"
   with_items: "{{ ceph_extra_confs }}"
@@ -213,7 +213,7 @@
     - always
 
 - name: Remove libvirt key file localhost
-  file:
+  ansible.builtin.file:
     path: "/tmp/{{ item.mon_host }}{{ item.client_name }}.key.tmp"
     state: "absent"
   delegate_to: localhost

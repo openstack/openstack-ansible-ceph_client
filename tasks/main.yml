@@ -14,14 +14,14 @@
 # limitations under the License.
 
 - name: End playbook if disabled
-  meta: end_play
+  ansible.builtin.meta: end_play
   when:
     - ceph_mons | list | length == 0 and ceph_conf_file is not defined
   tags:
     - always
 
 - name: Gather variables for each operating system
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       files:
@@ -36,13 +36,13 @@
     - always
 
 - name: Fail if ceph_pkg_source uses an incorrect parameter
-  fail:
+  ansible.builtin.fail:
     msg: "Invalid value for ceph_pkg_source. Valid parameters are ceph, distro."
   when:
     - ceph_pkg_source not in ['ceph', 'distro']
 
 - name: Including ceph_preinstall tasks
-  include_tasks: "ceph_preinstall_{{ ansible_facts['pkg_mgr'] }}.yml"
+  ansible.builtin.include_tasks: "ceph_preinstall_{{ ansible_facts['pkg_mgr'] }}.yml"
   args:
     apply:
       tags:
@@ -51,7 +51,7 @@
     - ceph-install
 
 - name: Including ceph_install tasks
-  include_tasks: ceph_install.yml
+  ansible.builtin.include_tasks: ceph_install.yml
   args:
     apply:
       tags:
@@ -60,7 +60,7 @@
     - ceph-install
 
 - name: Including ceph_install_python_libs tasks
-  include_tasks: ceph_install_python_libs.yml
+  ansible.builtin.include_tasks: ceph_install_python_libs.yml
   when:
     - openstack_service_venv_bin | length > 0
   args:
@@ -71,7 +71,7 @@
     - ceph-install
 
 - name: Including ceph_get_mon_host tasks
-  include_tasks: ceph_get_mon_host.yml
+  ansible.builtin.include_tasks: ceph_get_mon_host.yml
   when: ceph_conf_file is not defined or ceph_keyrings_dir is not defined
   args:
     apply:
@@ -81,7 +81,7 @@
     - ceph-config
 
 - name: Including ceph_config tasks
-  include_tasks: ceph_config.yml
+  ansible.builtin.include_tasks: ceph_config.yml
   args:
     apply:
       tags:
@@ -90,7 +90,7 @@
     - ceph-config
 
 - name: Including ceph_auth tasks
-  include_tasks: ceph_auth.yml
+  ansible.builtin.include_tasks: ceph_auth.yml
   when:
     - cephx | bool
   args:
@@ -101,7 +101,7 @@
     - ceph-config
 
 - name: Including ceph_immutable_object_cache tasks
-  include_tasks: ceph_immutable_object_cache.yml
+  ansible.builtin.include_tasks: ceph_immutable_object_cache.yml
   when:
     - ceph_immutable_object_cache_enabled | bool
   args:
@@ -128,7 +128,7 @@
     - ceph-config
 
 - name: Set permissions on persistent write log cache directory
-  file:
+  ansible.builtin.file:
     path: "{{ ceph_persistent_write_log_cache_dir }}"
     owner: "{{ ceph_persistent_write_log_cache_owner }}"
     group: "{{ ceph_persistent_write_log_cache_group }}"

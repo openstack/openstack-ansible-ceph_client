@@ -14,19 +14,19 @@
 # limitations under the License.
 
 - name: Create cephkeys_access_group group
-  group:
+  ansible.builtin.group:
     name: "{{ cephkeys_access_group }}"
 
 - name: Including ceph_get_keyrings_from_mons tasks
-  include_tasks: ceph_get_keyrings_from_mons.yml
+  ansible.builtin.include_tasks: ceph_get_keyrings_from_mons.yml
   when: ceph_keyrings_dir is not defined
 
 - name: Including ceph_get_keyrings_from_files tasks
-  include_tasks: ceph_get_keyrings_from_files.yml
+  ansible.builtin.include_tasks: ceph_get_keyrings_from_files.yml
   when: ceph_keyrings_dir is defined
 
 - name: Add OpenStack service to cephkeys_access_group group
-  user:
+  ansible.builtin.user:
     name: "{{ openstack_service_system_user }}"
     groups: "{{ cephkeys_access_group }}"
     append: true
@@ -34,13 +34,13 @@
     - Restart os services
 
 - name: Make sure libvirt is started
-  service:
+  ansible.builtin.service:
     name: "{{ libvirt_service_name }}"
     state: "started"
   when: inventory_hostname in groups.nova_compute
 
 - name: Check if nova secret is defined in libvirt
-  shell: virsh secret-list|grep {{ nova_ceph_client_uuid }}
+  ansible.builtin.shell: virsh secret-list|grep {{ nova_ceph_client_uuid }}
   when:
     - inventory_hostname in groups.nova_compute
   changed_when: false
@@ -50,7 +50,7 @@
     - always
 
 - name: Provide xml file to create the secret
-  template:
+  ansible.builtin.template:
     src: secret.xml.j2
     dest: /tmp/nova-secret.xml
     mode: "0600"
@@ -65,7 +65,7 @@
     - always
 
 - name: Define libvirt nova secret
-  command: virsh secret-define --file /tmp/nova-secret.xml # noqa: no-changed-when
+  ansible.builtin.command: virsh secret-define --file /tmp/nova-secret.xml # noqa: no-changed-when
   when:
     - inventory_hostname in groups.nova_compute
     - libvirt_nova_defined.rc is defined
@@ -76,7 +76,7 @@
     - always
 
 - name: Check if nova secret value is set in libvirt
-  command: virsh secret-get-value {{ nova_ceph_client_uuid }}
+  ansible.builtin.command: virsh secret-get-value {{ nova_ceph_client_uuid }}
   when:
     - inventory_hostname in groups.nova_compute
     - ceph_nova_secret is defined
@@ -87,7 +87,7 @@
     - always
 
 - name: Set nova secret value in libvirt
-  command: virsh secret-set-value --secret {{ nova_ceph_client_uuid }} --base64 {{ ceph_nova_secret.stdout }}
+  ansible.builtin.command: virsh secret-set-value --secret {{ nova_ceph_client_uuid }} --base64 {{ ceph_nova_secret.stdout }}
   changed_when: false
   when:
     - inventory_hostname in groups.nova_compute
@@ -101,7 +101,7 @@
     - ceph-config
 
 - name: Remove libvirt nova secret file
-  file:
+  ansible.builtin.file:
     path: "/tmp/nova-secret.xml"
     state: "absent"
   when:
@@ -110,7 +110,7 @@
     - always
 
 - name: Detect correct group for extra auth
-  set_fact:
+  ansible.builtin.set_fact:
     ceph_in_extra_auth_group: true
   with_items: "{{ ceph_extra_auth_groups }}"
   when:
@@ -118,13 +118,13 @@
     - inventory_hostname in groups[item]
 
 - name: Including ceph_auth_extra tasks
-  include_tasks: ceph_auth_extra.yml
+  ansible.builtin.include_tasks: ceph_auth_extra.yml
   when:
     - ceph_in_extra_auth_group is defined
     - ceph_in_extra_auth_group | bool
 
 - name: Detect extra nova uuid secret
-  set_fact:
+  ansible.builtin.set_fact:
     ceph_extra_nova_uuid: true
   with_items: "{{ ceph_extra_confs | default([]) }}"
   when:
@@ -132,7 +132,7 @@
     - item.secret_uuid is defined
 
 - name: Including ceph_auth_extra_compute tasks
-  include_tasks: ceph_auth_extra_compute.yml
+  ansible.builtin.include_tasks: ceph_auth_extra_compute.yml
   when:
     - ceph_extra_nova_uuid is defined
     - ceph_extra_nova_uuid | bool

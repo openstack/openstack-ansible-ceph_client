@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 - name: Create keyring files for openstack clients from extra cluster(s)
-  shell: >-
+  ansible.builtin.shell: >-
     ceph auth get client.{{ item.client_name }} --cluster {{ ceph_cluster_name }} >/dev/null &&
     ceph auth get-or-create client.{{ item.client_name }} --cluster {{ ceph_cluster_name }}
     > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp
@@ -25,7 +25,7 @@
     - item.mon_host is defined
 
 - name: Get extra keyring files
-  command: "scp {{ item.mon_host }}:/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp {{ item.keyring_src }}"
+  ansible.builtin.command: "scp {{ item.mon_host }}:/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp {{ item.keyring_src }}"
   changed_when: false
   delegate_to: localhost
   with_items: "{{ ceph_extra_confs }}"
@@ -35,7 +35,7 @@
     - item.client_name is defined
 
 - name: Secure extra keyring file permissions
-  file:
+  ansible.builtin.file:
     path: "{{ item.keyring_src }}"
     state: file
     mode: "0600"
@@ -45,7 +45,7 @@
     - item.keyring_src is defined
 
 - name: Remove temp extra keyring files
-  file:
+  ansible.builtin.file:
     path: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp"
     state: absent
   delegate_to: "{{ item.mon_host }}"
@@ -56,7 +56,7 @@
     - item.client_name is defined
 
 - name: Create extra keyring files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.keyring_src }}"
     dest: "{{ item.keyring_dest }}"
     owner: root

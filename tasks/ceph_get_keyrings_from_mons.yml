@@ -20,7 +20,7 @@
   # the first get makes sure the client exists, so the second only runs when it
   # exists, the trick is the different output of both, the second has the right
   # output to put in a keyring; ceph admin should have already created the user
-  shell: >-
+  ansible.builtin.shell: >-
     ceph auth get client.{{ item['name'] }} --cluster {{ ceph_cluster_name }} >/dev/null &&
     ceph auth get-or-create client.{{ item['name'] }} --cluster {{ ceph_cluster_name }}
   with_items: "{{ ceph_client_filtered_clients }}"
@@ -36,7 +36,7 @@
 - name: Provision ceph client keyrings
   # TODO: do we really need a template for this? what's the added value compare to
   # ceph get-or-create ... ... -o file?
-  template:
+  ansible.builtin.template:
     src: ceph.client.keyring.j2
     dest: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.item['name'] }}.keyring"
     backup: true
@@ -58,7 +58,7 @@
 
 ## Ceph nova client libvirt secret
 - name: Retrieve nova secret from cephcluster
-  command: ceph auth get-key client.{{ nova_ceph_client }} --cluster {{ ceph_cluster_name }}
+  ansible.builtin.command: ceph auth get-key client.{{ nova_ceph_client }} --cluster {{ ceph_cluster_name }}
   when:
     - inventory_hostname in groups.nova_compute
     - nova_ceph_client in ceph_client_filtered_clients | map(attribute='name') | list

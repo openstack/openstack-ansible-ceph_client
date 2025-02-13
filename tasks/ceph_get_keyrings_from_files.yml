@@ -16,7 +16,7 @@
 ## Ceph client keyrings
 
 - name: From files | Retrieve keyrings for openstack clients
-  set_fact:
+  ansible.builtin.set_fact:
     ceph_client_keys: |-
       {% set _keys = {} %}
       {% for client in ceph_client_filtered_clients %}
@@ -34,7 +34,7 @@
     - always
 
 - name: From files | Provision ceph client keyrings
-  copy:
+  ansible.builtin.copy:
     dest: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item['name'] }}.keyring"
     content: |
       {{ ceph_client_keys[item['name']] }}
@@ -52,7 +52,7 @@
     - Restart os services
 
 - name: From file | Retrieve nova secret
-  set_fact:
+  ansible.builtin.set_fact:
     ceph_nova_secret:
       stdout: "{{ (ceph_client_keys[nova_ceph_client] | regex_search('.*^\\s*key\\s*=\\s*(.*)$.*', '\\1', multiline=True))[0] }}"
   when:

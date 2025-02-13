@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 - name: Get extra ceph.conf files
-  command: "scp {{ item.mon_host }}:/etc/ceph/{{ item.cluster_name | default(ceph_cluster_name) }}.conf {{ item.src }}"
+  ansible.builtin.command: "scp {{ item.mon_host }}:/etc/ceph/{{ item.cluster_name | default(ceph_cluster_name) }}.conf {{ item.src }}"
   changed_when: false
   delegate_to: localhost
   with_items: "{{ ceph_extra_confs }}"
@@ -22,7 +22,7 @@
     - item.src is defined
 
 - name: Create extra ceph.conf files
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: root
@@ -36,7 +36,7 @@
     - item.dest is defined
 
 - name: Add keyring section to extra ceph.conf files
-  ini_file:
+  community.general.ini_file:
     dest: "{{ item.dest }}"
     section: "client.{{ item.client_name }}"
     option: keyring
