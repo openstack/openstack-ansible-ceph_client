@@ -40,9 +40,11 @@ ceph_client_package_state: "{{ package_state | default('latest') }}"
 #            package repositories.
 ceph_pkg_source: ceph
 ceph_stable_release: reef
-ceph_apt_pinned_packages: [{package: "*", release: "ceph.com", priority: 1001}]
-
-ceph_repo_url_region: "download"  # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
+ceph_apt_pinned_packages:
+  - package: "*"
+    release: "ceph.com"
+    priority: 1001
+ceph_repo_url_region: "download" # see here for other mirros http://docs.ceph.com/docs/master/install/mirrors/
 ceph_repo_url: https://{{ ceph_repo_url_region }}.ceph.com/{{ _ceph_repo_distro_suffix }}-{{ ceph_stable_release }}
 ceph_repos: "{{ _ceph_repos }}"
 
@@ -99,14 +101,14 @@ immutable_object_cache_client: immutable-object-cache
 # needs to access both volumes (cinder) as boot disks (nova) we default to
 # reuse the cinder_ceph_client
 # only need to change this if you'd use ceph for boot disks and not for volumes
-nova_ceph_client: '{{ cinder_ceph_client }}'
+nova_ceph_client: "{{ cinder_ceph_client }}"
 
 # overruled in user_secrets:
 # nova_ceph_client_uuid:
 
 cephkeys_access_group: ceph
 
-openstack_service_system_user: null
+openstack_service_system_user:
 
 ceph_cinder_service_names:
   - cinder-volume
@@ -141,7 +143,7 @@ ceph_centos_epel_key: >-
   {{ centos_epel_key | default('http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-' ~ ansible_facts['distribution_major_version']) }}
 
 # Immutible object cache - caches a read-only base layer of rbd volumes
-ceph_immutable_object_cache_enabled: False
+ceph_immutable_object_cache_enabled: false
 ceph_immutable_object_cache_service_name: "ceph-immutable-object-cache@"
 ceph_immutable_object_cache_dir: "/ceph-immutable-object-cache"
 ceph_immutable_object_cache_socket: "/run/ceph/immutable_object_cache_sock"
@@ -152,7 +154,7 @@ ceph_immutable_object_cache_mode: "0775"
 ceph_immutable_object_cache_key_owner: "{{ ceph_immutable_object_cache_owner }}"
 ceph_immutable_object_cache_key_group: "{{ ceph_immutable_object_cache_group }}"
 
-ceph_persistent_write_log_cache_enabled: False
+ceph_persistent_write_log_cache_enabled: false
 ceph_persistent_write_log_cache_dir: "/rbd-write-log-cache"
 ceph_persistent_write_log_cache_owner: "libvirt-qemu"
 ceph_persistent_write_log_cache_group: "ceph"

@@ -113,13 +113,13 @@
 
 - name: Write AppArmor configuration for ceph immutable object caching
   ansible.builtin.blockinfile:
-    create: True
+    create: true
     mode: "0644"
     path: /etc/apparmor.d/local/abstractions/libvirt-qemu
     marker: "### {mark} OSA CEPH_CLIENT IMMUTABLE OBJECT CACHE BLOCK ###"
     block: |
-        {{ ceph_immutable_object_cache_dir }}/** r,
-        {{ ceph_immutable_object_cache_socket }} rw,
+      {{ ceph_immutable_object_cache_dir }}/** r,
+      {{ ceph_immutable_object_cache_socket }} rw,
     state: "{{ ceph_immutable_object_cache_enabled | bool | ternary('present', 'absent') }}"
   when:
     - ansible_facts['os_family'] == "Debian"
@@ -139,12 +139,12 @@
 
 - name: Write AppArmor configuration for ceph write log caching
   ansible.builtin.blockinfile:
-    create: True
+    create: true
     mode: "0644"
     path: /etc/apparmor.d/local/abstractions/libvirt-qemu
     marker: "### {mark} OSA CEPH_CLIENT WRITE LOG CACHE BLOCK ###"
     block: |
-        {{ ceph_persistent_write_log_cache_dir }}/** rwk,
+      {{ ceph_persistent_write_log_cache_dir }}/** rwk,
     state: "{{ ceph_persistent_write_log_cache_enabled | bool | ternary('present', 'absent') }}"
   when:
     - ansible_facts['os_family'] == "Debian"

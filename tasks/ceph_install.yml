@@ -15,7 +15,7 @@
 
 - name: Install ceph packages
   package:
-    name: '{{ ceph_client_filtered_packages }}'
+    name: "{{ ceph_client_filtered_packages }}"
     state: "{{ ceph_client_package_state }}"
     update_cache: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary('yes', omit) }}"
     cache_valid_time: "{{ (ansible_facts['pkg_mgr'] == 'apt') | ternary(cache_timeout, omit) }}"

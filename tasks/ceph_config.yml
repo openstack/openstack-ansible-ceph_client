@@ -25,7 +25,7 @@
   slurp:
     src: "/etc/ceph/{{ ceph_cluster_name }}.conf"
   register: ceph_conf_content_mon
-  delegate_to: '{{ ceph_mon_host }}'
+  delegate_to: "{{ ceph_mon_host }}"
   changed_when: false
   when:
     - ceph_conf_file is not defined
@@ -44,19 +44,19 @@
 
 - name: Create ceph.conf from mon host
   openstack.config_template.config_template:
-    content: '{{ ceph_conf }}'
+    content: "{{ ceph_conf }}"
     dest: "/etc/ceph/{{ ceph_cluster_name }}.conf"
     owner: root
     group: root
     mode: "0644"
     config_type: ini
-    config_overrides: '{{ ceph_client_ceph_conf_overrides }}'
+    config_overrides: "{{ ceph_client_ceph_conf_overrides }}"
   notify:
     - Restart os services
 
 - name: Detect correct group for extra config
   set_fact:
-    ceph_in_extra_config_group: True
+    ceph_in_extra_config_group: true
   when:
     - ceph_extra_confs is defined
     - inventory_hostname in groups[item]

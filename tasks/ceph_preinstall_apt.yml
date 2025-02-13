@@ -77,7 +77,7 @@
 
 - name: Update Apt cache
   apt:
-    update_cache: yes
+    update_cache: true
   when: (apt_repo_removed is changed) or (deb822_repos is changed)
   register: update_apt_cache
   until: update_apt_cache is success

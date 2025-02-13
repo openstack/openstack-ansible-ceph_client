@@ -18,7 +18,7 @@
     paths: "{{ openstack_service_venv_bin | dirname }}/lib/"
     patterns: "python*"
     file_type: directory
-    recurse: no
+    recurse: false
   register: python_venv_details
 
 - name: Set python venvs details

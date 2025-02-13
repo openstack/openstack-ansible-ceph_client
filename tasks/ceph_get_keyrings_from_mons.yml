@@ -25,7 +25,7 @@
     ceph auth get-or-create client.{{ item['name'] }} --cluster {{ ceph_cluster_name }}
   with_items: "{{ ceph_client_filtered_clients }}"
   changed_when: false
-  delegate_to: '{{ ceph_mon_host }}'
+  delegate_to: "{{ ceph_mon_host }}"
   register: ceph_client_keyrings
   until: ceph_client_keyrings is success
   retries: 3
@@ -63,7 +63,7 @@
     - inventory_hostname in groups.nova_compute
     - nova_ceph_client in ceph_client_filtered_clients | map(attribute='name') | list
   changed_when: false
-  delegate_to: '{{ ceph_mon_host }}'
+  delegate_to: "{{ ceph_mon_host }}"
   register: ceph_nova_secret
   tags:
     - always

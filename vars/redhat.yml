@@ -39,9 +39,9 @@ _ceph_repos:
   - name: ceph-client-deps
     baseurl: "{{ ceph_centos_epel_mirror ~ '/' ~ ansible_facts['distribution_major_version'] ~ '/Everything/' ~ ansible_facts['architecture'] }}"
     description: "Extra Packages for Enterprise Linux {{ ansible_facts['distribution_major_version'] }} - $basearch"
-    gpgcheck: yes
+    gpgcheck: true
     gpgkey: "file:///etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
-    enabled: yes
+    enabled: true
     state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
     includepkgs:
       - fmt
@@ -50,7 +50,7 @@ _ceph_repos:
       - libarrow-doc
       - libbabeltrace
       - liboath
-      - 'lttng-ust*'
+      - "lttng-ust*"
       - parquet-libs
       - re2
       - thrift
@@ -59,16 +59,16 @@ _ceph_repos:
     description: "Ceph packages for $basearch"
     file: ceph
     baseurl: "{{ ceph_repo_url }}/el$releasever/$basearch"
-    gpgcheck: yes
-    enabled: yes
+    gpgcheck: true
+    enabled: true
     priority: 50
     state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
   - name: ceph-noarch
     description: "Ceph noarch packages"
     file: ceph
     baseurl: "{{ ceph_repo_url }}/el$releasever/noarch"
-    gpgcheck: yes
-    enabled: yes
+    gpgcheck: true
+    enabled: true
     priority: 50
     state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
 

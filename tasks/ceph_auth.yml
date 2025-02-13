@@ -29,7 +29,7 @@
   user:
     name: "{{ openstack_service_system_user }}"
     groups: "{{ cephkeys_access_group }}"
-    append: yes
+    append: true
   notify:
     - Restart os services
 
@@ -111,7 +111,7 @@
 
 - name: Detect correct group for extra auth
   set_fact:
-    ceph_in_extra_auth_group: True
+    ceph_in_extra_auth_group: true
   with_items: "{{ ceph_extra_auth_groups }}"
   when:
     - ceph_extra_confs is defined
@@ -125,7 +125,7 @@
 
 - name: Detect extra nova uuid secret
   set_fact:
-    ceph_extra_nova_uuid: True
+    ceph_extra_nova_uuid: true
   with_items: "{{ ceph_extra_confs | default([]) }}"
   when:
     - inventory_hostname in groups[ceph_extra_compute_group]

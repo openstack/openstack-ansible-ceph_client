@@ -17,7 +17,6 @@
 ## APT Cache Options
 cache_timeout: 600
 
-
 libvirt_packages:
   - libvirt-daemon-system
 
