@@ -10,11 +10,11 @@ As part of compute node preparation:
 
 Assuming the spare disk available for a write cache is nvme2n1 for example:
 
-..code-block:: console
+.. code-block:: console
 
-  mkfs.ext4 /dev/nvme2n1     # create ext4 filesystem on disk
-  mkdir /rbd-write-log-cache
-  mount /dev/nvme2n1 /rbd-write-log-cache
+   # mkfs.ext4 /dev/nvme2n1     # create ext4 filesystem on disk
+   # mkdir /rbd-write-log-cache
+   # mount /dev/nvme2n1 /rbd-write-log-cache
 
 
 The ceph_client ansible role will ensure that the directory permissions
