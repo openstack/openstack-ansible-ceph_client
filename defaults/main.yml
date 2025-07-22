@@ -97,6 +97,18 @@ cinder_backup_ceph_client: cinder-backup
 gnocchi_ceph_client: gnocchi
 immutable_object_cache_client: immutable-object-cache
 
+# Defenition of components for which Ceph should be installed
+# and keyrings provisioned.
+# Example:
+#  - component: gnocchi_api
+#    package:
+#      - "{{ python_ceph_package }}"
+#    client:
+#      - name: "{{ gnocchi_ceph_client }}"
+#    service: "{{ ceph_gnocchi_service_names }}"
+ceph_components: "{{ _ceph_components }}"
+ceph_extra_components: []
+
 # by default we assume you use rbd for both cinder and nova, and as libvirt
 # needs to access both volumes (cinder) as boot disks (nova) we default to
 # reuse the cinder_ceph_client

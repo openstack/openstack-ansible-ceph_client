@@ -14,7 +14,7 @@
 # limitations under the License.
 # http://ceph.com/docs/master/rbd/rbd-openstack/
 
-ceph_components:
+_ceph_components:
   - component: glance_api
     package: "{{ python_ceph_packages }}"
     client:
@@ -48,17 +48,6 @@ ceph_components:
 # cache daemon package name is the same on ubuntu/centos
 ceph_immutable_object_cache_packages:
   - "{{ ceph_immutable_object_cache_enabled | ternary('ceph-immutable-object-cache', '') }}"
-
-ceph_extra_components: []
-# Gnocchi has been moved out from the integrated OSA repo, but can still
-# be optionally enabled by using the configuration in the os_gnocchi role repo
-# under the 'extras' directory
-#  - component: gnocchi_api
-#    package:
-#      - "{{ python_ceph_package }}"
-#    client:
-#      - name: '{{ gnocchi_ceph_client }}'
-#    service: '{{ ceph_gnocchi_service_names }}'
 
 ceph_client_filtered_packages: |-
   {% set packages = [] %}
