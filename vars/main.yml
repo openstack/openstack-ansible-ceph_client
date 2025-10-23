@@ -30,6 +30,7 @@ _ceph_components:
     client:
       - name: "{{ cinder_backup_ceph_client }}"
     service: "{{ ceph_cinder_service_names }}"
+    condition: "{{ ceph_cinder_backup_enabled }}"
   - component: nova_compute
     package: "{{ (libvirt_packages + ['ceph-common'] + ceph_immutable_object_cache_packages + python_ceph_packages) | select }}"
     client:
@@ -75,15 +76,11 @@ ceph_client_filtered_clients: |-
   {% set clients = [] %}
   {% for comp in (ceph_components + ceph_extra_components) %}
   {%   if comp.component in group_names %}
-  {%     if ((comp.component != 'cinder_backup') or
-            ((cinder_service_backup_program_enabled is defined and
-              cinder_service_backup_program_enabled | bool) and
-             (cinder_service_backup_driver is defined and
-              'ceph' in cinder_service_backup_driver))) %}
+  {%     if comp.get('condition', true) %}
   {%       for client in comp.client %}
   {%         if client is not mapping %}
   {%           set _ = clients.append({'name': client}) %}
-  {%         elif client['enabled'] | default(true) | bool  %}
+  {%         elif client['enabled'] | default(true) | bool %}
   {%           set _ = clients.append(client) %}
   {%         endif %}
   {%       endfor %}
