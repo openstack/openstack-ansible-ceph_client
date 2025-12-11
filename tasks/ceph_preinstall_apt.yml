@@ -22,20 +22,6 @@
   when:
     - ceph_pkg_source == 'ceph'
 
-# NOTE(jrosser) remove this task for the 2025.2 release
-- name: Find legacy repository files
-  ansible.builtin.find:
-    paths: /etc/apt/sources.list.d/
-    patterns: "{{ ceph_repo_url | urlsplit('hostname') | replace('.', '_') }}_*.list"
-  register: _legacy_apt_repos
-
-- name: Clean up legacy repository config not in deb822 format
-  ansible.builtin.file:
-    path: "{{ item['path'] }}"
-    state: absent
-  with_items: "{{ _legacy_apt_repos['files'] }}"
-  register: apt_repo_removed
-
 - name: Ensure python3-debian package is available
   ansible.builtin.apt:
     name: python3-debian
@@ -78,7 +64,7 @@
 - name: Update Apt cache
   ansible.builtin.apt:
     update_cache: true
-  when: (apt_repo_removed is changed) or (deb822_repos is changed)
+  when: deb822_repos is changed
   register: update_apt_cache
   until: update_apt_cache is success
   retries: 5
