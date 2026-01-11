@@ -15,7 +15,7 @@
 
 # Ceph GPG Keys
 ceph_gpg_keys:
-  # download.ceph.com/keys/release.asc
+  # https://download.ceph.com/keys/release.asc
   - key: /etc/pki/rpm-gpg/ceph_com_keys_release
     src: gpg/ceph_com_keys_release
     state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
@@ -71,5 +71,3 @@ _ceph_repos:
     enabled: true
     priority: 50
     state: "{{ (ceph_pkg_source == 'ceph') | ternary('present', 'absent') }}"
-
-# TODO mgariepy: add CentOS SIG ceph repo.

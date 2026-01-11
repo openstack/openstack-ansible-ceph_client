@@ -12,7 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# http://ceph.com/docs/master/rbd/rbd-openstack/
+#
+# https://docs.ceph.com/en/latest/rbd/rbd-openstack/
 
 _ceph_components:
   - component: glance_api
@@ -46,7 +47,7 @@ _ceph_components:
       - name: "{{ manila_ceph_client }}"
     service: "{{ ceph_manila_service_names }}"
 
-# cache daemon package name is the same on ubuntu/centos
+# cache daemon package name is the same on Ubuntu/RHEL
 ceph_immutable_object_cache_packages:
   - "{{ ceph_immutable_object_cache_enabled | ternary('ceph-immutable-object-cache', '') }}"
 
