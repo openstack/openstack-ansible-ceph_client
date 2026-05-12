@@ -120,7 +120,7 @@ nova_ceph_client: "{{ cinder_ceph_client }}"
 
 cephkeys_access_group: ceph
 
-openstack_service_system_user:
+openstack_service_system_user: ""
 
 ceph_cinder_backup_enabled: >-
   {{

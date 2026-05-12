@@ -105,7 +105,9 @@
     path: "/tmp/nova-secret.xml"
     state: "absent"
   when:
-    - inventory_hostname in groups.nova_compute and libvirt_nova_set
+    - inventory_hostname in groups.nova_compute
+    - libvirt_nova_defined.rc is defined
+    - libvirt_nova_defined.rc != 0
   tags:
     - always
 
