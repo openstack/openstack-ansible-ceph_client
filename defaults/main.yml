@@ -122,6 +122,12 @@ cephkeys_access_group: ceph
 
 openstack_service_system_user:
 
+ceph_cinder_backup_enabled: >-
+  {{
+      (cinder_service_backup_program_enabled is defined and cinder_service_backup_program_enabled | bool) and
+      (cinder_service_backup_driver is defined and 'ceph' in cinder_service_backup_driver)
+  }}
+
 ceph_cinder_service_names:
   - cinder-volume
   - cinder-backup
