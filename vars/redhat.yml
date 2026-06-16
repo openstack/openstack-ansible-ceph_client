@@ -55,6 +55,10 @@ _ceph_repos:
       - re2
       - thrift
       - userspace-rcu
+      - libpmemobj
+      - libpmem
+      - gperftools-libs
+      - liborc2
   - name: ceph
     description: "Ceph packages for $basearch"
     file: ceph
