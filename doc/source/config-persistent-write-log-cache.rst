@@ -29,7 +29,7 @@ enabled on the nova_compute ceph clients.
 
 Adjust the cache size based on the expected number of volumes mounted on
 the compute node and the size of the cache device. The cache size is
-allocated on the disk seperately for each pool/volume combination that is
+allocated on the disk separately for each pool/volume combination that is
 active on the host.
 
 .. code-block:: yaml
