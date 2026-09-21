@@ -59,7 +59,7 @@
     ceph_in_extra_config_group: true
   when:
     - ceph_extra_confs is defined
-    - inventory_hostname in groups[item]
+    - inventory_hostname in groups.get(item, [])
   with_items: "{{ ceph_extra_config_groups }}"
 
 - name: Including ceph_config_extra tasks

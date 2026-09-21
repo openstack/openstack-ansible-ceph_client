@@ -33,83 +33,79 @@
   notify:
     - Restart os services
 
-- name: Make sure libvirt is started
-  ansible.builtin.service:
-    name: "{{ libvirt_service_name }}"
-    state: "started"
-  when: inventory_hostname in groups.nova_compute
-
-- name: Check if nova secret is defined in libvirt
-  ansible.builtin.shell: virsh secret-list|grep {{ nova_ceph_client_uuid }}
+- name: Configure compute service for default cluster
   when:
-    - inventory_hostname in groups.nova_compute
-  changed_when: false
-  failed_when: false
-  register: libvirt_nova_defined
-  tags:
-    - always
+    - inventory_hostname in groups.get(ceph_compute_group, [])
+  block:
+    - name: Make sure libvirt is started
+      ansible.builtin.service:
+        name: "{{ libvirt_service_name }}"
+        state: "started"
 
-- name: Provide xml file to create the secret
-  ansible.builtin.template:
-    src: secret.xml.j2
-    dest: /tmp/nova-secret.xml
-    mode: "0600"
-  with_items:
-    - secret_uuid: "{{ nova_ceph_client_uuid }}"
-      client_name: "{{ nova_ceph_client }}"
-  when:
-    - inventory_hostname in groups.nova_compute
-    - libvirt_nova_defined.rc is defined
-    - libvirt_nova_defined.rc != 0
-  tags:
-    - always
+    - name: Check if nova secret is defined in libvirt
+      ansible.builtin.shell: virsh secret-list|grep {{ nova_ceph_client_uuid }}
+      changed_when: false
+      failed_when: false
+      register: libvirt_nova_defined
+      tags:
+        - always
 
-- name: Define libvirt nova secret
-  ansible.builtin.command: virsh secret-define --file /tmp/nova-secret.xml # noqa: no-changed-when
-  when:
-    - inventory_hostname in groups.nova_compute
-    - libvirt_nova_defined.rc is defined
-    - libvirt_nova_defined.rc != 0
-  notify:
-    - Restart os services
-  tags:
-    - always
+    - name: Provide xml file to create the secret
+      ansible.builtin.template:
+        src: secret.xml.j2
+        dest: /tmp/nova-secret.xml
+        mode: "0600"
+      with_items:
+        - secret_uuid: "{{ nova_ceph_client_uuid }}"
+          client_name: "{{ nova_ceph_client }}"
+      when:
+        - libvirt_nova_defined.rc is defined
+        - libvirt_nova_defined.rc != 0
+      tags:
+        - always
 
-- name: Check if nova secret value is set in libvirt
-  ansible.builtin.command: virsh secret-get-value {{ nova_ceph_client_uuid }}
-  when:
-    - inventory_hostname in groups.nova_compute
-    - ceph_nova_secret is defined
-  changed_when: false
-  failed_when: false
-  register: libvirt_nova_set
-  tags:
-    - always
+    - name: Define libvirt nova secret
+      ansible.builtin.command: virsh secret-define --file /tmp/nova-secret.xml # noqa: no-changed-when
+      when:
+        - libvirt_nova_defined.rc is defined
+        - libvirt_nova_defined.rc != 0
+      notify:
+        - Restart os services
+      tags:
+        - always
 
-- name: Set nova secret value in libvirt
-  ansible.builtin.command: virsh secret-set-value --secret {{ nova_ceph_client_uuid }} --base64 {{ ceph_nova_secret.stdout }}
-  changed_when: false
-  when:
-    - inventory_hostname in groups.nova_compute
-    - libvirt_nova_set.rc is defined
-    - libvirt_nova_set.rc != 0 or
-      (libvirt_nova_set.rc == 0 and
-       libvirt_nova_set.stdout != ceph_nova_secret.stdout)
-  notify:
-    - Restart os services
-  tags:
-    - ceph-config
+    - name: Check if nova secret value is set in libvirt
+      ansible.builtin.command: virsh secret-get-value {{ nova_ceph_client_uuid }}
+      when:
+        - ceph_nova_secret is defined
+      changed_when: false
+      failed_when: false
+      register: libvirt_nova_set
+      tags:
+        - always
 
-- name: Remove libvirt nova secret file
-  ansible.builtin.file:
-    path: "/tmp/nova-secret.xml"
-    state: "absent"
-  when:
-    - inventory_hostname in groups.nova_compute
-    - libvirt_nova_defined.rc is defined
-    - libvirt_nova_defined.rc != 0
-  tags:
-    - always
+    - name: Set nova secret value in libvirt
+      ansible.builtin.command: virsh secret-set-value --secret {{ nova_ceph_client_uuid }} --base64 {{ ceph_nova_secret.stdout }}
+      changed_when: false
+      when:
+        - libvirt_nova_set.rc is defined
+        - libvirt_nova_set.rc != 0 or
+          (libvirt_nova_set.rc == 0 and
+          libvirt_nova_set.stdout != ceph_nova_secret.stdout)
+      notify:
+        - Restart os services
+      tags:
+        - ceph-config
+
+    - name: Remove libvirt nova secret file
+      ansible.builtin.file:
+        path: "/tmp/nova-secret.xml"
+        state: "absent"
+      when:
+        - libvirt_nova_defined.rc is defined
+        - libvirt_nova_defined.rc != 0
+      tags:
+        - always
 
 - name: Detect correct group for extra auth
   ansible.builtin.set_fact:
@@ -117,7 +113,7 @@
   with_items: "{{ ceph_extra_auth_groups }}"
   when:
     - ceph_extra_confs is defined
-    - inventory_hostname in groups[item]
+    - inventory_hostname in groups.get(item, [])
 
 - name: Including ceph_auth_extra tasks
   ansible.builtin.include_tasks: ceph_auth_extra.yml
@@ -130,7 +126,7 @@
     ceph_extra_nova_uuid: true
   with_items: "{{ ceph_extra_confs | default([]) }}"
   when:
-    - inventory_hostname in groups[ceph_extra_compute_group]
+    - inventory_hostname in groups.get(ceph_extra_compute_group, [])
     - item.secret_uuid is defined
 
 - name: Including ceph_auth_extra_compute tasks

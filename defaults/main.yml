@@ -132,6 +132,7 @@ ceph_cinder_service_names:
   - cinder-volume
   - cinder-backup
 
+ceph_compute_group: nova_compute
 ceph_nova_service_names:
   - nova-compute
 
