@@ -35,9 +35,9 @@
 
 - name: From files | Provision ceph client keyrings
   ansible.builtin.copy:
-    dest: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item['name'] }}.keyring"
+    dest: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ client['name'] }}.keyring"
     content: |
-      {{ ceph_client_keys[item['name']] }}
+      {{ ceph_client_keys[client['name']] }}
     owner: "{{ client['owner'] | default('root') }}"
     group: "{{ client['group'] | default(cephkeys_access_group) }}"
     # ideally the permission will be: 0600 and the owner/group will be either
@@ -47,7 +47,9 @@
     # If I'm correct, the use case for multiple users is on the computre nodes,
     # access needed by users libvirt-qemu and nova
     mode: "{{ client['mode'] | default('0640') }}"
-  with_items: "{{ ceph_client_filtered_clients }}"
+  loop: "{{ ceph_client_filtered_clients }}"
+  loop_control:
+    loop_var: client
   notify:
     - Restart os services
 
