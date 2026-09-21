@@ -13,40 +13,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Download EPEL gpg keys
-  ansible.builtin.get_url:
-    url: "{{ item.url }}"
-    dest: "{{ item.key }}"
-    mode: "0640"
-  with_items: "{{ ceph_gpg_keys | selectattr('url', 'defined') }}"
-  register: _get_yum_keys
-  until: _get_yum_keys is success
-  retries: 5
-  delay: 2
+- name: Add GPG keys
   when:
     - ceph_pkg_source == 'ceph'
+  block:
+    - name: Download EPEL gpg keys
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.key }}"
+        mode: "0640"
+      with_items: "{{ ceph_gpg_keys | selectattr('url', 'defined') }}"
+      register: _get_yum_keys
+      until: _get_yum_keys is success
+      retries: 5
+      delay: 2
 
-- name: Copy Ceph gpg keyfile to the key location
-  ansible.builtin.copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.key }}"
-    mode: "0640"
-  with_items: "{{ ceph_gpg_keys | selectattr('src', 'defined') }}"
-  when:
-    - ceph_pkg_source == 'ceph'
+    - name: Copy Ceph gpg keyfile to the key location
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.key }}"
+        mode: "0640"
+      with_items: "{{ ceph_gpg_keys | selectattr('src', 'defined') }}"
 
-- name: Install Ceph gpg keys
-  ansible.builtin.rpm_key:
-    key: "{{ key['key'] }}"
-    fingerprint: "{{ key['fingerprint'] | default(omit) }}"
-    state: "{{ key['state'] | default('present') }}"
-  with_items: "{{ ceph_gpg_keys }}"
-  loop_control:
-    loop_var: key
-  register: _add_ceph_keys
-  until: _add_ceph_keys is success
-  retries: 5
-  delay: 2
+    - name: Install Ceph gpg keys
+      ansible.builtin.rpm_key:
+        key: "{{ key['key'] }}"
+        fingerprint: "{{ key['fingerprint'] | default(omit) }}"
+        state: "{{ key['state'] | default('present') }}"
+      with_items: "{{ ceph_gpg_keys }}"
+      loop_control:
+        loop_var: key
+      register: _add_ceph_keys
+      until: _add_ceph_keys is success
+      retries: 5
+      delay: 2
 
 - name: Install required repositories
   ansible.builtin.yum_repository:
