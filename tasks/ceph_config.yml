@@ -25,7 +25,7 @@
   ansible.builtin.slurp:
     src: "/etc/ceph/{{ ceph_cluster_name }}.conf"
   register: ceph_conf_content_mon
-  delegate_to: "{{ ceph_mon_host }}"
+  delegate_to: "{{ ceph_mon_host | default('localhost') }}"
   changed_when: false
   when:
     - ceph_conf_file is not defined

@@ -19,7 +19,7 @@
     > /etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp
   with_items: "{{ ceph_extra_confs }}"
   changed_when: false
-  delegate_to: "{{ item.mon_host }}"
+  delegate_to: "{{ item.mon_host | default('localhost') }}"
   when:
     - item.client_name is defined
     - item.mon_host is defined
@@ -48,7 +48,7 @@
   ansible.builtin.file:
     path: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.client_name }}.keyring.tmp"
     state: absent
-  delegate_to: "{{ item.mon_host }}"
+  delegate_to: "{{ item.mon_host | default('localhost') }}"
   with_items: "{{ ceph_extra_confs }}"
   when:
     - item.mon_host is defined
