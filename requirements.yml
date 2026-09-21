@@ -1,0 +1,13 @@
+---
+collections:
+  - name: openstack.config_template
+    source: https://opendev.org/openstack/ansible-config_template
+    type: git
+  - name: community.general
+    source: https://github.com/ansible-collections/community.general
+    type: git
+roles:
+  - name: apt_package_pinning
+    src: https://opendev.org/openstack/openstack-ansible-apt_package_pinning
+    scm: git
+    version: master

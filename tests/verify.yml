@@ -1,0 +1,256 @@
+---
+# Copyright 2026, Cleura AB.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Verify Ceph Client Installation
+  hosts: ceph_client
+  vars_files:
+    - vars/test-vars.yml
+    - "vars/scenario-{{ lookup('env', 'MOLECULE_SCENARIO_NAME') | default(molecule_scenario_name | default('default'), true) }}.yml"
+  tasks:
+    - name: Check /etc/ceph/ceph.conf exists
+      ansible.builtin.stat:
+        path: "/etc/ceph/{{ ceph_cluster_name }}.conf"
+      register: ceph_conf_stat
+      failed_when: not ceph_conf_stat.stat.exists
+
+    - name: Slurp ceph.conf content
+      ansible.builtin.slurp:
+        src: "/etc/ceph/{{ ceph_cluster_name }}.conf"
+      register: ceph_conf_content
+
+    - name: Validate ceph.conf contents
+      ansible.builtin.assert:
+        that:
+          - "'[global]' in (ceph_conf_content.content | b64decode)"
+          - "'mon_host' in (ceph_conf_content.content | b64decode) or 'mon host' in (ceph_conf_content.content | b64decode)"
+        fail_msg: "ceph.conf is missing expected global or mon host settings"
+
+    # Tasks for storage client hosts (glance_api)
+    - name: Check client keyrings exist and have correct permissions
+      ansible.builtin.stat:
+        path: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item.name }}.keyring"
+      loop: "{{ test_ceph_clients }}"
+      register: keyring_stats
+      when: inventory_hostname in groups.get('glance_api', [])
+
+    - name: Validate keyring properties
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.isreg
+          - item.stat.mode == "0640"
+          - item.stat.gr_name == "ceph"
+        fail_msg: "Keyring {{ item.item.name }} does not match expected state or permissions"
+      loop: "{{ keyring_stats.results | default([]) }}"
+      when:
+        - inventory_hostname in groups.get('glance_api', [])
+        - item.stat is defined
+
+    - name: Slurp client keyrings to verify content structure
+      ansible.builtin.slurp:
+        src: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ item }}.keyring"
+      loop:
+        - glance
+        - cinder
+        - cinder-backup
+        - custom_client
+      register: slurped_client_keyrings
+      when: inventory_hostname in groups.get('glance_api', [])
+
+    - name: Validate client keyrings contain key definitions
+      ansible.builtin.assert:
+        that:
+          - "'[client.' ~ item.item ~ ']' in (item.content | b64decode)"
+          - "'key =' in (item.content | b64decode)"
+        fail_msg: "Keyring for {{ item.item }} is missing client header or key"
+      loop: "{{ slurped_client_keyrings.results | default([]) }}"
+      when:
+        - inventory_hostname in groups.get('glance_api', [])
+        - item.content is defined
+
+    - name: Query Ceph auth capabilities from monitor
+      ansible.builtin.command: >-
+        ceph auth get client.{{ item.name }} --cluster {{ ceph_cluster_name }}
+      loop: "{{ test_ceph_clients }}"
+      delegate_to: "{{ groups['ceph_mon'] | first }}"
+      register: ceph_auth_query
+      run_once: true
+      changed_when: false
+
+    - name: Validate specific client capabilities on Ceph cluster
+      ansible.builtin.assert:
+        that:
+          - "'pool=images' in ceph_auth_query.results[0].stdout"
+          - "'pool=volumes' in ceph_auth_query.results[1].stdout"
+          - "'pool=vms' in ceph_auth_query.results[1].stdout"
+          - "'pool=backups' in ceph_auth_query.results[2].stdout"
+          - "'allow rw' in ceph_auth_query.results[3].stdout"
+        fail_msg: "Cluster auth capabilities do not match expected differentiated capabilities"
+      run_once: true
+
+    - name: Test live Ceph client authentication against monitor
+      ansible.builtin.command: >-
+        ceph --cluster {{ ceph_cluster_name }} --name client.{{ item.name }} -s
+      loop: "{{ test_ceph_clients }}"
+      register: ceph_client_auth_test
+      changed_when: false
+      when: inventory_hostname in groups.get('glance_api', [])
+
+    - name: Validate client authentication returned expected cluster status
+      ansible.builtin.assert:
+        that:
+          - "'cluster:' in item.stdout"
+          - "test_ceph_fsid in item.stdout"
+        fail_msg: "Client {{ item.item.name }} failed to retrieve valid cluster status"
+      loop: "{{ ceph_client_auth_test.results | default([]) }}"
+      when:
+        - inventory_hostname in groups.get('glance_api', [])
+        - item.stdout is defined
+
+    - name: Verify extra component package python3-cephfs is installed
+      vars:
+        _pkg_mgr_command:
+          dnf: rpm -q
+          apt: dpkg -s
+      ansible.builtin.command: "{{ _pkg_mgr_command[ansible_facts['pkg_mgr']] }} python3-cephfs"
+      changed_when: false
+      when: inventory_hostname in groups.get('custom_service', [])
+
+    - name: Check extra cluster ceph2.conf exists
+      ansible.builtin.stat:
+        path: /etc/ceph/ceph2.conf
+      register: ceph2_conf_stat
+      when: inventory_hostname in groups.get('cinder_volume', [])
+      failed_when: not ceph2_conf_stat.stat.exists
+
+    - name: Slurp extra cluster ceph2.conf content
+      ansible.builtin.slurp:
+        src: /etc/ceph/ceph2.conf
+      register: ceph2_conf_content
+      when: inventory_hostname in groups.get('cinder_volume', [])
+
+    - name: Validate ceph2.conf content and injected keyring section
+      ansible.builtin.assert:
+        that:
+          - "'[client.cinder2]' in (ceph2_conf_content.content | b64decode)"
+          - "'keyring = /etc/ceph/ceph2.client.cinder2.keyring' in (ceph2_conf_content.content | b64decode)"
+          - test_ceph_extra_fsid in (ceph2_conf_content.content | b64decode)
+        fail_msg: "ceph2.conf does not contain expected config or client.cinder2 section"
+      when: inventory_hostname in groups.get('cinder_volume', [])
+
+    - name: Check extra client keyring exists with correct permissions
+      ansible.builtin.stat:
+        path: /etc/ceph/ceph2.client.cinder2.keyring
+      register: ceph2_keyring_stat
+      when: inventory_hostname in groups.get('cinder_volume', [])
+
+    - name: Validate extra client keyring properties
+      ansible.builtin.assert:
+        that:
+          - ceph2_keyring_stat.stat.exists
+          - ceph2_keyring_stat.stat.isreg
+          - ceph2_keyring_stat.stat.mode == "0640"
+          - ceph2_keyring_stat.stat.gr_name == "ceph"
+        fail_msg: "ceph2.client.cinder2.keyring is missing or has incorrect permissions"
+      when: inventory_hostname in groups.get('cinder_volume', [])
+
+    # Tasks for compute hosts (nova_compute)
+    - name: Verify compute libvirt secret definition
+      when: inventory_hostname in groups.get('nova_compute', [])
+      block:
+        - name: Check nova client keyring exists on compute node
+          ansible.builtin.stat:
+            path: "/etc/ceph/{{ ceph_cluster_name }}.client.{{ nova_ceph_client | default('cinder') }}.keyring"
+          register: compute_keyring_stat
+          failed_when: not compute_keyring_stat.stat.exists or compute_keyring_stat.stat.mode != "0640"
+
+        - name: Check nova secret is defined in libvirt
+          ansible.builtin.command: virsh secret-list
+          register: virsh_secret_list
+          changed_when: false
+
+        - name: Validate nova secret exists in libvirt
+          ansible.builtin.assert:
+            that:
+              - "nova_ceph_client_uuid in virsh_secret_list.stdout"
+            fail_msg: "Libvirt secret {{ nova_ceph_client_uuid }} not found in virsh secret-list"
+
+        - name: Query nova secret value from libvirt
+          ansible.builtin.command: virsh secret-get-value {{ nova_ceph_client_uuid }}
+          register: virsh_secret_val
+          changed_when: false
+
+        - name: Fetch expected client key from monitor
+          ansible.builtin.command: >-
+            ceph auth get-key client.{{ nova_ceph_client | default('cinder') }} --cluster {{ ceph_cluster_name }}
+          delegate_to: "{{ groups['ceph_mon'] | first }}"
+          register: expected_nova_key
+          changed_when: false
+
+        - name: Validate libvirt secret value matches Ceph client key
+          ansible.builtin.assert:
+            that:
+              - "virsh_secret_val.stdout == expected_nova_key.stdout"
+            fail_msg: "Libvirt secret value does not match expected Ceph client key"
+
+        - name: Dump libvirt secret XML
+          ansible.builtin.command: virsh secret-dumpxml {{ nova_ceph_client_uuid }}
+          register: virsh_secret_xml
+          changed_when: false
+
+        - name: Validate libvirt secret XML structure
+          ansible.builtin.assert:
+            that:
+              - "nova_ceph_client_uuid in virsh_secret_xml.stdout"
+              - "(nova_ceph_client | default('cinder')) in virsh_secret_xml.stdout"
+            fail_msg: "Libvirt secret XML does not contain expected UUID or usage name"
+
+    # Tasks common to all ceph_client hosts
+    - name: Find python site-packages in the test virtualenv
+      ansible.builtin.find:
+        paths: "{{ openstack_service_venv_bin | dirname }}/lib/"
+        patterns: "python*"
+        file_type: directory
+      register: venv_python_dir
+
+    - name: Set venv site-packages path
+      ansible.builtin.set_fact:
+        venv_site_packages: "{{ venv_python_dir.files[0].path }}/site-packages"
+
+    - name: Find rados and rbd symlinks in venv site-packages
+      ansible.builtin.find:
+        paths: "{{ venv_site_packages }}"
+        patterns:
+          - "*rados*"
+          - "*rbd*"
+        file_type: any
+      register: ceph_venv_symlinks
+
+    - name: Validate that rados and rbd are symlinked into the virtualenv
+      ansible.builtin.assert:
+        that:
+          - ceph_venv_symlinks.matched >= 2
+          - ceph_venv_symlinks.files | selectattr('islnk') | list | length >= 2
+        fail_msg: "rados or rbd symlinks not found in venv site-packages"
+
+    - name: Verify python import of rados and rbd inside the virtualenv
+      ansible.builtin.command: "{{ openstack_service_venv_bin }}/python -c 'import rados; import rbd'"
+      changed_when: false
+      register: venv_import_check
+
+    - name: Check ceph-common binary is installed and executable
+      ansible.builtin.command: ceph --version
+      changed_when: false
+      register: ceph_version_check

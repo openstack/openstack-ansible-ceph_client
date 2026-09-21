@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Playbook for role testing
-  hosts: localhost
-  connection: local
-  user: root
-  become: true
+- name: Run the client role
+  hosts: ceph_client
+  vars_files:
+    - vars/test-vars.yml
+    - "vars/scenario-{{ lookup('env', 'MOLECULE_SCENARIO_NAME') | default(molecule_scenario_name | default('default'), true) }}.yml"
   roles:
     - role: "ceph_client"

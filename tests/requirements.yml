@@ -1,0 +1,8 @@
+---
+collections:
+  - name: community.docker
+    source: https://github.com/ansible-collections/community.docker
+    type: git
+  - name: ansible.posix
+    source: https://github.com/ansible-collections/ansible.posix
+    type: git

@@ -1,0 +1,47 @@
+---
+# Copyright 2026, Cleura AB.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Ensure ceph_keyrings_dir exists on localhost
+  ansible.builtin.file:
+    path: "{{ ceph_keyrings_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Read ceph.conf from monitor
+  ansible.builtin.slurp:
+    src: "/etc/ceph/{{ ceph_cluster_name }}.conf"
+  delegate_to: "{{ groups['ceph_mon'][0] }}"
+  register: mon_ceph_conf
+
+- name: Write ceph.conf to localhost keyrings directory
+  ansible.builtin.copy:
+    dest: "{{ ceph_keyrings_dir }}/{{ ceph_cluster_name }}.conf"
+    content: "{{ mon_ceph_conf.content | b64decode }}"
+    mode: "0644"
+
+- name: Export client keyrings from monitor
+  ansible.builtin.command: >-
+    ceph auth get client.{{ item.name }} --cluster {{ ceph_cluster_name }}
+  loop: "{{ test_ceph_clients }}"
+  delegate_to: "{{ groups['ceph_mon'][0] }}"
+  register: mon_client_keyrings
+  changed_when: false
+
+- name: Write client keyrings to localhost keyrings directory
+  ansible.builtin.copy:
+    dest: "{{ ceph_keyrings_dir }}/{{ item.item.name }}.keyring"
+    content: "{{ item.stdout }}\n"
+    mode: "0600"
+  loop: "{{ mon_client_keyrings.results }}"

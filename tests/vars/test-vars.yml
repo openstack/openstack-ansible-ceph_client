@@ -1,0 +1,56 @@
+---
+# Copyright 2026, Cleura AB.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+test_ceph_fsid: "4037aa5f-abde-4378-9470-f73dbd6ceaba"
+test_ceph_extra_fsid: "11111111-2222-3333-4444-555555555555"
+ceph_cluster_name: "ceph"
+ceph_pkg_source: "distro"
+ceph_stable_release: squid
+openstack_service_venv_bin: "/opt/openstack/venv/bin"
+openstack_service_system_user: "root"
+
+# Enable cinder-backup in the role for testing
+ceph_cinder_backup_enabled: true
+nova_ceph_client_uuid: "4579e278-e3a1-4e14-9721-a72a11b0e77d"
+
+# Clients to pre-create on Ceph Monitor during prepare and configure in test
+test_ceph_clients:
+  - name: glance
+    caps: "mon 'profile rbd' osd 'profile rbd pool=images'"
+  - name: cinder
+    caps: "mon 'profile rbd' osd 'profile rbd pool=volumes, profile rbd pool=vms'"
+  - name: cinder-backup
+    caps: "mon 'profile rbd' osd 'profile rbd pool=backups'"
+  - name: custom_client
+    caps: "mon 'allow r' osd 'allow rw'"
+
+# Testing extra components definition
+ceph_extra_components:
+  - component: custom_service
+    package:
+      - python3-cephfs
+    client:
+      - name: custom_client
+
+# Testing extra config groups and extra cluster configs
+ceph_extra_config_groups:
+  - cinder_volume
+
+ceph_extra_confs:
+  - src: "/tmp/ceph2.conf"
+    dest: "/etc/ceph/ceph2.conf"
+    client_name: cinder2
+    keyring_src: "/tmp/ceph2.client.cinder2.keyring"
+    keyring_dest: "/etc/ceph/ceph2.client.cinder2.keyring"

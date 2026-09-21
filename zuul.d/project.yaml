@@ -18,5 +18,6 @@
       - openstack-ansible-linters-jobs
       - check-requirements
       - openstack-ansible-deploy-ceph-jobs
+      - openstack-ansible-molecule
       - publish-openstack-docs-pti
       - build-release-notes-jobs-python3
