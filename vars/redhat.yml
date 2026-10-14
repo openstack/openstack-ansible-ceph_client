@@ -37,7 +37,13 @@ python_ceph_packages:
 _ceph_repo_distro_suffix: rpm
 _ceph_repos:
   - name: ceph-client-deps
-    baseurl: "{{ ceph_centos_epel_mirror ~ '/' ~ ansible_facts['distribution_major_version'] ~ '/Everything/' ~ ansible_facts['architecture'] }}"
+    baseurl: >-
+      {{
+        ceph_centos_epel_mirror ~ '/' ~
+        ansible_facts['distribution_major_version'] ~
+        (ansible_facts['distribution'] | lower != 'centos') | ternary('z', '') ~
+        '/Everything/' ~ ansible_facts['architecture']
+      }}
     description: "Extra Packages for Enterprise Linux {{ ansible_facts['distribution_major_version'] }} - $basearch"
     gpgcheck: true
     gpgkey: "file:///etc/pki/rpm-gpg/{{ ceph_centos_epel_key.split('/')[-1] }}"
